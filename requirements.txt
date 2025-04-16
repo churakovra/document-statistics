@@ -1,0 +1,16 @@
+#backend
+fastapi
+starlette
+uvicorn
+pydantic
+
+#db
+sqlalchemy
+psycopg2-binary
+python-multipart
+
+#test
+pytest
+
+#environment
+python-dotenv
