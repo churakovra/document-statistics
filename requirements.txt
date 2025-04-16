@@ -4,6 +4,7 @@ uvicorn
 pydantic
 
 #db
+sqlalchemy
 psycopg2-binary
 
 #test
