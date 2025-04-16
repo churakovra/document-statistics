@@ -1,0 +1,10 @@
+#backend
+fastapi
+uvicorn
+pydantic
+
+#db
+psycopg2
+
+#test
+pytest
