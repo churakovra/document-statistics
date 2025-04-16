@@ -9,3 +9,6 @@ psycopg2-binary
 
 #test
 pytest
+
+#environment
+python-dotenv
