@@ -7,6 +7,7 @@ pydantic
 #db
 sqlalchemy
 psycopg2-binary
+python-multipart
 
 #test
 pytest

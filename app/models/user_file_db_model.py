@@ -1,11 +1,13 @@
 from datetime import datetime
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
 
 from app.models.base_db_model import Base
-from app.models.file_contents_db_model import FileContents
+
+if TYPE_CHECKING:
+    from file_contents_db_model import FileContents
 
 
 class UserFile(Base):
@@ -15,7 +17,8 @@ class UserFile(Base):
     file_name: Mapped[str] = mapped_column(String(50), nullable=False)
     load_datetime: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
     user: Mapped[str] = mapped_column(String(16), nullable=False)
-    words: Mapped[List["FileContents"]] = relationship(back_populates="file")
+    words: Mapped[List["FileContents"]] = (
+        relationship("FileContents", back_populates="file", cascade="all, delete-orphan"))
 
     def __repr__(self) -> str:
         return (f"File("
