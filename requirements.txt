@@ -4,7 +4,7 @@ uvicorn
 pydantic
 
 #db
-psycopg2
+psycopg2-binary
 
 #test
 pytest
