@@ -15,13 +15,14 @@ from app.models.user_file import UserFile
 add_new_file_router = APIRouter()
 
 
+# Ендпоинт для обработки загрузки файла
 @add_new_file_router.post("/file/new")
 async def add_new_file(
         file: UploadFile,
         request: Request,
         session: Session = Depends(get_session)
 ):
-    content = (await file.read()).decode("utf-8")
+    content = (await file.read()).decode("utf-8")  # Читаем файл
     words = [word.strip(string.punctuation).lower() for word in content.split()]
     user_file = UserFile(
         file_name=file.filename,
@@ -30,5 +31,5 @@ async def add_new_file(
         user=request.client.host,
         words=words
     )
-    await add_new_file_to_db(user_file, session)
+    add_new_file_to_db(user_file, session) # Отправляем файл в метод для добавления в БД
     return {"message": f"Success! File {file.filename} uploaded, status {HTTP_200_OK}"}
