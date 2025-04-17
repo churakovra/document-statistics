@@ -25,6 +25,7 @@ async def add_new_file(
     words = [word.strip(string.punctuation).lower() for word in content.split()]
     user_file = UserFile(
         file_name=file.filename,
+        file_size=len(words),
         load_datetime=datetime.now(),
         user=request.client.host,
         words=words

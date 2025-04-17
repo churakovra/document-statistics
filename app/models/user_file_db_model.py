@@ -14,7 +14,8 @@ class UserFile(Base):
     __tablename__ = "user_file"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, nullable=False)
-    file_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    file_name: Mapped[str] = mapped_column(String(50), nullable=False),
+    file_size: Mapped[int] = mapped_column(nullable=False)
     load_datetime: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
     user: Mapped[str] = mapped_column(String(16), nullable=False)
     words: Mapped[List["FileContents"]] = (
