@@ -10,7 +10,7 @@ from starlette.status import HTTP_200_OK
 
 from app.controllers.add_new_file_to_db_controller import add_new_file_to_db
 from app.database import get_session
-from app.models.user_file import UserFile
+from app.models.user_file_model import UserFile
 
 add_new_file_router = APIRouter()
 
