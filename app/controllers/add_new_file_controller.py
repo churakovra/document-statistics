@@ -31,5 +31,10 @@ async def add_new_file(
         user=request.client.host,
         words=words
     )
-    add_new_file_to_db(user_file, session) # Отправляем файл в метод для добавления в БД
-    return {"message": f"Success! File {file.filename} uploaded, status {HTTP_200_OK}"}
+    fid = add_new_file_to_db(user_file, session)  # Отправляем файл в метод для добавления в БД
+    return {
+        "code": HTTP_200_OK,
+        "file_name": f"{file.filename}",
+        "file_id": f"{fid}"
+
+    }
