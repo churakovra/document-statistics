@@ -6,7 +6,7 @@ from app.models.user_files_db_model import UserFiles
 
 
 # Добавляем файл в БД + добавляем слова
-def add_new_file_to_db(file: UserFile, session: Session):
+def add_new_file_to_db(file: UserFile, session: Session) -> int:
     user_file = UserFiles(
         file_name=file.file_name,
         file_size=file.file_size,
@@ -21,3 +21,4 @@ def add_new_file_to_db(file: UserFile, session: Session):
         add_file_words(user_file, word, session)
 
     session.commit()
+    return user_file.id
