@@ -10,7 +10,7 @@ from starlette.status import HTTP_200_OK
 
 from app.controllers.add_new_file_to_db_controller import add_new_file_to_db
 from app.database import get_session
-from app.models.user_file import UserFile
+from app.models.user_file_model import UserFile
 
 add_new_file_router = APIRouter()
 
@@ -31,5 +31,10 @@ async def add_new_file(
         user=request.client.host,
         words=words
     )
-    add_new_file_to_db(user_file, session) # Отправляем файл в метод для добавления в БД
-    return {"message": f"Success! File {file.filename} uploaded, status {HTTP_200_OK}"}
+    fid = add_new_file_to_db(user_file, session)  # Отправляем файл в метод для добавления в БД
+    return {
+        "code": HTTP_200_OK,
+        "file_name": f"{file.filename}",
+        "file_id": f"{fid}"
+
+    }
