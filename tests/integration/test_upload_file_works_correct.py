@@ -5,7 +5,7 @@ from tests.conftest import client
 
 
 @pytest.mark.asyncio
-async def test_upload_file_words_correct(client):
+async def test_upload_file_words_correct(client) -> int:
     file_content = "Hello  world! This is? TeSt senTence"
     file_name = "test-file1.txt"
 
@@ -24,3 +24,5 @@ async def test_upload_file_words_correct(client):
     data = response.json()
     assert "file_id" in data
     assert data["file_name"] == file_name
+
+    return data["file_id"]
