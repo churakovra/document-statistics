@@ -4,6 +4,9 @@ starlette
 uvicorn
 pydantic
 
+#frontend
+jinja2
+
 #db
 sqlalchemy
 psycopg2-binary
