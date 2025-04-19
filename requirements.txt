@@ -14,6 +14,9 @@ python-multipart
 
 #test
 pytest
+pytest-asyncio
+httpx
+pytest-cov
 
 #environment
 python-dotenv
