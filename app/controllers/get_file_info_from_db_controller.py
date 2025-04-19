@@ -9,21 +9,21 @@ from app.models.word_stat_response_model import WordStats
 from app.models.words_in_file_db_model import FileWords
 
 
-def get_file_info_db(file_id: int, session: Session) -> list[WordStats]:
-    res = list()
-
+def get_file_info_db(
+        file_id: int,
+        limit: int,
+        offset: int,
+        session: Session) -> list[WordStats]:
+    pre_res = list[WordStats]()
     words_in_file = get_words(file_id, session)
-
     word_in_files_query = get_word_in_files(file_id, session)
-
     file_size = get_file_size(file_id, session)
-
     files_count = get_files_count(file_id, session)
 
     for _ in range(0, len(words_in_file)):
         word, words_in_file_count = words_in_file[_]
         file_count = word_in_files_query[_][0]
-        res.append(
+        pre_res.append(
             WordStats(
                 word=word,
                 words_in_file_count=words_in_file_count,
@@ -34,11 +34,14 @@ def get_file_info_db(file_id: int, session: Session) -> list[WordStats]:
                 idf=log(files_count / file_count, 10)
             )
         )
-
+    pre_res.sort(key=lambda word_stat: word_stat.idf)
+    res = list[WordStats]()
+    for _ in range(0, limit):
+        res.append(pre_res[offset + _])
     return res
 
 
-def get_words(file_id, session) -> Sequence[Row[tuple[str, int]]]:
+def get_words(file_id: int, session: Session) -> Sequence[Row[tuple[str, int]]]:
     return session.execute(
         select(
             UserWords.word,
@@ -51,7 +54,7 @@ def get_words(file_id, session) -> Sequence[Row[tuple[str, int]]]:
     ).all()
 
 
-def get_word_in_files(file_id, session) -> Sequence[Row[tuple[int]]]:
+def get_word_in_files(file_id: int, session: Session) -> Sequence[Row[tuple[int]]]:
     return session.execute(
         select(
             func.count(FileWords.id_file.distinct())
@@ -69,7 +72,7 @@ def get_word_in_files(file_id, session) -> Sequence[Row[tuple[int]]]:
     ).all()
 
 
-def get_file_size(file_id, session) -> int:
+def get_file_size(file_id: int, session: Session) -> int:
     return session.scalar(
         select(
             UserFiles.file_size
@@ -79,7 +82,7 @@ def get_file_size(file_id, session) -> int:
     )
 
 
-def get_files_count(file_id, session) -> int:
+def get_files_count(file_id: int, session: Session) -> int:
     return session.scalar(
         select(
             func.count(UserFiles.id)
