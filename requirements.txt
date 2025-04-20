@@ -5,7 +5,7 @@ uvicorn
 pydantic
 
 #frontend
-jinja2
+streamlit
 
 #db
 sqlalchemy
