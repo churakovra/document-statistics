@@ -34,14 +34,14 @@ def get_file_info_db(
                 idf=log(files_count / file_count, 10)
             )
         )
-    pre_res.sort(key=lambda word_stat: word_stat.idf)
+    pre_res.sort(reverse=True)
     res = list[WordStats]()
     for _ in range(0, limit):
         res.append(pre_res[offset + _])
     return res
 
 
-def get_words(file_id: int, session: Session) -> Sequence[Row[tuple[str, int]]]:
+def get_words(file_id: int, session: Session):
     return session.execute(
         select(
             UserWords.word,
@@ -54,7 +54,7 @@ def get_words(file_id: int, session: Session) -> Sequence[Row[tuple[str, int]]]:
     ).all()
 
 
-def get_word_in_files(file_id: int, session: Session) -> Sequence[Row[tuple[int]]]:
+def get_word_in_files(file_id: int, session: Session):
     return session.execute(
         select(
             func.count(FileWords.id_file.distinct())
