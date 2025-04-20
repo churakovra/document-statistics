@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
 
-  back:
+  backend:
     build: .
     container_name: doc-stat-app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -25,3 +25,20 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
+
+  frontend:
+    build: .
+    command: streamlit run app/view/frontend.py --server.port 8501 --server.address 0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      - backend
+    restart: unless-stopped
