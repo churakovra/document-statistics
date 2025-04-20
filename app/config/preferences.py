@@ -2,6 +2,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
+# consts for db and backend
 load_dotenv()
 
 DB_NAME = getenv("DB_NAME")
