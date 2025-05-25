@@ -1,6 +1,6 @@
 services:
   ds_pg:
-    image: postgres:14
+    image: postgres:15-alpine
     restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
