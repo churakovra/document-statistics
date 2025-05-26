@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.status import HTTP_200_OK
 
-from app.database import get_session
+from app.db.database import get_session
 from app.repositories.file_repository import FileRepository
 from app.services.file_service import FileService
 

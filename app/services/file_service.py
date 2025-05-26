@@ -5,17 +5,17 @@ from math import log
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from app.models.user_file_model import UserFile
-from app.models.word_stat_response_model import WordStats
+from app.schemas.user_file_dto import UserFileDTO
+from app.schemas.word_stat_dto import WordStatDTO
 from app.repositories.file_repository import FileRepository
 
 
 class FileService:
     @staticmethod
-    async def parse_file(file: UploadFile, user_host: str):
+    async def parse_file(file: UploadFile, user_host: str) -> UserFileDTO:
         content = (await file.read()).decode("utf-8")  # Читаем файл
         words = [word.strip(string.punctuation).lower() for word in content.split()]
-        user_file = UserFile(
+        user_file = UserFileDTO(
             file_name=file.filename,
             file_size=len(words),
             load_datetime=datetime.now(),
@@ -29,8 +29,9 @@ class FileService:
             file_id: int,
             limit: int,
             offset: int,
-            session: Session) -> list[WordStats]:
-        pre_res = list[WordStats]()
+            session: Session
+    ) -> list[WordStatDTO]:
+        pre_res = list[WordStatDTO]()
         words_in_file = FileRepository.get_words(file_id, session)
         word_in_files_query = FileRepository.get_word_in_files(file_id, session)
         file_size = FileRepository.get_file_size(file_id, session)
@@ -40,7 +41,7 @@ class FileService:
             word, words_in_file_count = words_in_file[_]
             file_count = word_in_files_query[_][0]
             pre_res.append(
-                WordStats(
+                WordStatDTO(
                     word=word,
                     words_in_file_count=words_in_file_count,
                     file_size=file_size,
@@ -51,7 +52,7 @@ class FileService:
                 )
             )
         pre_res.sort(reverse=True)
-        res = list[WordStats]()
+        res = list[WordStatDTO]()
         for _ in range(0, limit):
             res.append(pre_res[offset + _])
         return res

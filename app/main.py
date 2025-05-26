@@ -3,7 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.add_file import router as add_new_file_router
 from app.api.get_file_info import router as file_info_router
-from app.database import init_db
+from app.db.database import init_db
 
 app = FastAPI(
     lifespan=init_db
