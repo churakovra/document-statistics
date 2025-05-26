@@ -3,7 +3,9 @@ import requests
 import streamlit
 from starlette.status import HTTP_200_OK
 
-API_URL = "http://backend:8000"
+from app.config.preferences import BACKEND_PORT, BACK_SERVICE_NAME
+
+API_URL = f"http://{BACK_SERVICE_NAME}:{BACKEND_PORT}"
 PAGE_SIZE = 50
 
 streamlit.set_page_config(
