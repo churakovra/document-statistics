@@ -12,11 +12,11 @@ from app.controllers.add_new_file_to_db_controller import add_new_file_to_db
 from app.database import get_session
 from app.models.user_file_model import UserFile
 
-add_new_file_router = APIRouter()
+router = APIRouter()
 
 
 # Ендпоинт для обработки загрузки файла
-@add_new_file_router.post("/file/new")
+@router.post("/file/new")
 async def add_new_file(
         file: UploadFile,
         request: Request,

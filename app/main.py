@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.controllers.add_new_file_controller import add_new_file_router
-from app.controllers.get_file_info_controller import get_file_info_router
+from app.api.add_file import router as add_new_file_router
+from app.api.get_file_info import router as file_info_router
 from app.database import init_db
 
 app = FastAPI(
@@ -18,4 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(add_new_file_router)
-app.include_router(get_file_info_router)
+app.include_router(file_info_router)
