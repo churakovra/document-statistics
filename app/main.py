@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.add_file import router as add_new_file_router
-from app.api.get_file_info import router as file_info_router
+from app import routers
 from app.db.database import init_db
 
 app = FastAPI(
@@ -17,5 +16,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(add_new_file_router)
-app.include_router(file_info_router)
+for router in routers:
+    app.include_router(router)
