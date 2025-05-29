@@ -8,11 +8,15 @@ ___
 ```
 document-statistics/  
 |--app/
+|  |--api/
 |  |--config/
-|  |--contollers/
-|  |--models/
-|  |--view/
-|  |--database.py
+|  |--db/
+|     |--models/
+|     |database.py
+|  |--frontend/
+|  |--repositories/
+|  |--schemas/
+|  |--services/
 |  |--main.py
 |
 |--tests/
@@ -21,11 +25,12 @@ document-statistics/
 |  |conftest.py
 |
 |.env
-|.docker-compose.yml
+|docker-compose.yml
 |Dockerfile
 |pytest.ini
 |README.md
-|.requirements.txt
+|requirements.txt
+|requirements-dev.txt
 ```
 ___
 ## Запуск
@@ -45,6 +50,7 @@ _Version 1.1.0_
 
 - Добавлена структура проекта в Readme
 - Добавлен Changelog
+- Проведён рефактор, хендлеры вынесены в api 
 
 _Version 1.0.0_
 - Версия проекта на момент сдачи, реализованный функционал:
