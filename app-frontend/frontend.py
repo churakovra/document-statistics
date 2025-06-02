@@ -1,9 +1,12 @@
+import os
+
 import pandas
 import requests
 import streamlit
-from starlette.status import HTTP_200_OK
+from http import HTTPStatus
 
-from app.config.preferences import BACKEND_PORT, BACK_SERVICE_NAME
+BACKEND_PORT = os.getenv("BACKEND_PORT")
+BACK_SERVICE_NAME = os.getenv("BACK_SERVICE_NAME")
 
 API_URL = f"http://{BACK_SERVICE_NAME}:{BACKEND_PORT}"
 PAGE_SIZE = 50
@@ -28,7 +31,7 @@ if uploaded_file is not None and streamlit.session_state.file_id is None:
     files = {"file": (uploaded_file.name, uploaded_file, "text/plain")}
     response = requests.post(f"{API_URL}/file/new", files=files)
 
-    if response.status_code == HTTP_200_OK:
+    if response.status_code == HTTPStatus.OK:
         streamlit.success(response.status_code)
         streamlit.session_state.file_id = response.json()["file_id"]
         streamlit.session_state.page = 0
