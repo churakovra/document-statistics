@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 from datetime import datetime
 
 from pydantic import BaseModel
 
-@dataclass
+
 class UserFileDTO(BaseModel):
     file_name: str
     file_size: int

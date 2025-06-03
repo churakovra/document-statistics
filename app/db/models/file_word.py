@@ -18,8 +18,8 @@ class FileWord(Base):
     id_file: Mapped[int] = mapped_column(ForeignKey("user_file.id"), nullable=False)
     id_word: Mapped[int] = mapped_column(ForeignKey("user_word.id"), nullable=False)
 
-    user_files: Mapped["UserFile"] = relationship("UserFile", back_populates="word")
-    user_words: Mapped["UserWord"] = relationship("UserWord", back_populates="file")
+    user_file: Mapped["UserFile"] = relationship("UserFile", back_populates="word")
+    user_word: Mapped["UserWord"] = relationship("UserWord", back_populates="file")
 
     def __repr__(self) -> str:
         return f"FileWord(id={self.id!r}, id_file={self.id_file}, id_word={self.id_word})"

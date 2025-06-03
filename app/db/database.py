@@ -10,6 +10,7 @@ from app.db.models.base import Base
 engine = create_engine(url=DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
+
 @asynccontextmanager
 async def init_db(app: FastAPI):
     Base.metadata.create_all(bind=engine)
