@@ -1,0 +1,2 @@
+#frontend
+streamlit==1.45.1

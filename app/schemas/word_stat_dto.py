@@ -1,7 +1,9 @@
+from dataclasses import dataclass
+
 from pydantic import BaseModel
 
-
-class WordStats(BaseModel):
+@dataclass
+class WordStatDTO(BaseModel):
     word: str
     words_in_file_count: int  # Сколько раз слово встречается в файле. Для расчета tf
     file_size: int  # Размер файла. Для расчета tf
@@ -11,11 +13,11 @@ class WordStats(BaseModel):
     idf: int | float = None
 
     def __lt__(self, other):
-        if not isinstance(other, WordStats):
+        if not isinstance(other, WordStatDTO):
             return NotImplemented
         return self.idf < other.idf
 
     def __eq__(self, other):
-        if not isinstance(other, WordStats):
+        if not isinstance(other, WordStatDTO):
             return NotImplemented
         return self.word == other.word and self.tf == other.tf and self.idf == other.idf
