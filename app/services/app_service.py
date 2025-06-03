@@ -4,6 +4,7 @@ from app.config.version import __version__
 from app.enums.app_enums import Status
 from app.repositories.app_repository import AppRepository
 
+from app.config.metrics import METRICS_DESCRIPTION
 
 class AppService:
     def __init__(self, db_session: Session):
@@ -20,3 +21,7 @@ class AppService:
     def get_version() -> str:
         version = __version__
         return version
+
+    @staticmethod
+    def get_metrics() -> dict[str, str]:
+        return METRICS_DESCRIPTION
