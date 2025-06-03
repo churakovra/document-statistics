@@ -7,30 +7,31 @@ ___
 ## Структура
 ```
 document-statistics/  
-|--app/
-|  |--api/
-|  |--config/
+|--app/                     # Бекенд сервис 
+|  |--api/                  # Роутеры и эндпоинты
+|  |--config/               # Конфигурационные файлы
 |  |--db/
-|     |--models/
-|     |database.py
-|  |--frontend/
-|  |--repositories/
-|  |--schemas/
-|  |--services/
-|  |--main.py
+|     |--models/            # ORM модели
+|     |database.py          # Файл инициализации БД
+|  |--enums/                # Наборы енамов
+|  |--repositories/         # Репозитории (Реализация работы с БД)
+|  |--schemas/              # Pydantic схемы
+|  |--services/             # Сервисы (Реализация логики)
+|  |--main.py               # Точка входа
 |
-|--tests/
+|--app-frontend/            # Простой UI Streamlit
+|  |frontend.py
+|
+|--tests/                   # Тесты
 |  |--integration/
 |  |--unit/
 |  |conftest.py
 |
-|.env
-|docker-compose.yml
-|Dockerfile
-|pytest.ini
-|README.md
-|requirements.txt
-|requirements-dev.txt
+|.env                       # Переменные окружения
+|docker-compose.yml         # Собирает и запускает приложение
+|Dockerfile                 # Образ backend и frontend сервисов
+|README.md                  # Документация проекта
+|requirements-*.txt         # Зависимости
 ```
 ___
 ## Запуск
@@ -41,16 +42,35 @@ ___
     * DB_PASSWORD=your_db_password
     * DB_HOST=your_db_host
     * DB_PORT=5432 (но можно и другой на свое усмотрение)
-3. В терминале перейти в папку с проектом, запустить деплой командой docker-compose up --build
+    * BACK_SERVICE_NAME=backend_service_name(e.g. from docker-compose)
+    * BACKEND_PORT=your_backend_port
+3. В терминале перейти в папку с проектом, запустить деплой командой docker compose up --build
 4. Сервис доступен по ссылке http://0.0.0.0:8501, либо http://localhost:8501
 5. Документация API доступна по ссылке http://0.0.0.0:8000/docs, либо http://localhost:8000/docs
 ___
 ## Changelog
 _Version 1.1.0_
 
+- Проведён рефактор проекта
+  - API хендлеры вынесены в соответствующий пакет
+  - Вынесен в отдельный слой Repo функционал для работы с БД
+  - Вынесен в отдельный слой Service функционал, выполняющий бизнес-логику
+  - Фронт вынесен в отдельный пакет на уровень с беком
+  - Переименованы функции, файлы - даны более лаконичные названия
+  - Переименованы инстансы в БД
+- Добавлены новые ручки
+  - /status - Возвращает `{"status":"OK"}`, если приложение работоспособно
+  - /version - Возвращает `{"version":"<curr_version>"}`
+  - /metrics - Возвращает json с метриками приложения и их описанием `{"metric":"description"}`
+    - Добавлены 2 метрики:
+      - "unique_user_count": "(int) кол-во уникальных пользователей, загрузивших хотя бы 1 файл"
+      - "avg_files_per_user": "(float) среднее кол-во файлов с точностью 3 знака после запятой, загруженных пользователем"
+- Уменьшен размер Docker образов:
+  - Для backend image размер изменился 1.5 ГБ -> 286 МБ
+  - Для frontend image размер изменился 1.5 ГБ -> 753 МБ
+- Оптимизирован docker-compose
 - Добавлена структура проекта в Readme
 - Добавлен Changelog
-- Проведён рефактор, хендлеры вынесены в api 
 
 _Version 1.0.0_
 - Версия проекта на момент сдачи, реализованный функционал:
