@@ -1,0 +1,13 @@
+#backend
+fastapi==0.115.12
+starlette==0.46.2
+uvicorn==0.34.2
+pydantic==2.11.5
+
+#db
+sqlalchemy==2.0.41
+psycopg2-binary==2.9.10
+python-multipart==0.0.20
+
+#environment
+python-dotenv==1.1.0

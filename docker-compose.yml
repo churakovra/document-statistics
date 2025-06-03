@@ -1,20 +1,26 @@
 services:
   ds_pg:
-    image: postgres:14
+    image: postgres:15-alpine
     restart: always
+    container_name: ds-database
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    ports:
-      - "5432:5432"
+    volumes:
+      - dspg:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   backend:
-    build: .
-    container_name: doc-stat-app
+    build:
+      context: .
+      target: backend
+    container_name: ds-backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -27,18 +33,16 @@ services:
       - DB_PORT=${DB_PORT}
 
   frontend:
-    build: .
-    command: streamlit run app/view/frontend.py --server.port 8501 --server.address 0.0.0.0
-    volumes:
-      - .:/app
+    build:
+      context: .
+      target: frontend
+    container_name: ds-frontend
+    command: streamlit run app-frontend/frontend.py --server.port 8501 --server.address 0.0.0.0
     ports:
       - "8501:8501"
     environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-    depends_on:
-      - backend
+      - BACKEND_PORT=${BACKEND_PORT}
+      - BACK_SERVICE_NAME=${BACK_SERVICE_NAME}
     restart: unless-stopped
+volumes:
+  dspg:
