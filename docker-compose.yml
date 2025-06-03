@@ -7,6 +7,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - dspg:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
       interval: 5s
@@ -42,3 +44,5 @@ services:
       - BACKEND_PORT=${BACKEND_PORT}
       - BACK_SERVICE_NAME=${BACK_SERVICE_NAME}
     restart: unless-stopped
+volumes:
+  dspg:
