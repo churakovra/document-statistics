@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
-@dataclass
+
 class WordStatDTO(BaseModel):
     word: str
     words_in_file_count: int  # Сколько раз слово встречается в файле. Для расчета tf
