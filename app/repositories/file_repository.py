@@ -1,9 +1,6 @@
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from app.db.models.file_word import FileWord
-from app.db.models.user_file import UserFile
-from app.db.models.user_word import UserWord
 from app.schemas.user_file_dto import UserFileDTO
 
 
