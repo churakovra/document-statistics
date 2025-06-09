@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.db.models.user_account import UserAccount
 from app.db.models.base import Base
 from app.db.models.collection_documents import CollectionDocuments
 
@@ -11,8 +13,9 @@ from app.db.models.collection_documents import CollectionDocuments
 class Collection(Base):
     __tablename__ = "collection"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True)
-    create_user: Mapped[UUID]
-    create_dt: Mapped[datetime]
+    uuid: Mapped[UUID] = mapped_column(primary_key=True)
+    user_create: Mapped[UUID] = mapped_column(ForeignKey("user_account.uuid"), nullable=False)
+    dt_create: Mapped[datetime]
 
+    user_account: Mapped["UserAccount"] = relationship("User", back_populates="collections")
     documents: Mapped[List["CollectionDocuments"]] = relationship("CollectionDocuments", back_populates="collection")
