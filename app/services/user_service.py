@@ -20,7 +20,7 @@ class UserService:
         user_repo = UserRepository(self.db)
         user = user_repo.get_user(user_creds.username)
         if user is None:
-            raise UserNotFoundException
+            raise UserNotFoundException(user_creds.username)
         if not AuthService.validate_pass(user_creds.password, user.password_hashed):
             raise UserWrongPasswordException()
         app_service = AppService(self.db)
@@ -37,11 +37,10 @@ class UserService:
         pass
 
     def register_user(self, user_creds: NewUserAccount):
-        password_hashed = AuthService.hash_pass(user_creds.password)
-        user_creds.password = password_hashed
-
         user_repo = UserRepository(self.db)
         if user_repo.get_user(user_creds.username) is not None:
             raise UserAlreadyExistsException(user_creds.username)
-        user_repo.add_user(user_creds)
 
+        password_hashed = AuthService.hash_pass(user_creds.password)
+        user_creds.password = password_hashed
+        user_repo.add_user(user_creds)

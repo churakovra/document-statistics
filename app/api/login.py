@@ -40,6 +40,6 @@ async def login(
         response.set_cookie(key=sck.DT_EXP, value=user_session.dt_exp.strftime(DT_STR_FORMAT))
         return UserAccountResponse(message="Success", status_code=HTTPStatus.OK)
     except UserNotFoundException as nf:
-        return UserAccountResponse(message=str(nf), status_code=nf.status_code)
+        raise HTTPException(status_code=nf.status_code, detail=nf.message)
     except UserWrongPasswordException as wp:
-        return UserAccountResponse(message=str(wp), status_code=wp.status_code)
+        raise HTTPException(status_code=wp.status_code, detail=wp.message)
