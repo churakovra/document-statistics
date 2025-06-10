@@ -5,6 +5,7 @@ pass_context = CryptContext(
     deprecated="auto",
 )
 
+
 class AuthService:
     @staticmethod
     def validate_pass(pwd: str, pwd_hashed: str):
