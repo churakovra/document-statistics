@@ -9,3 +9,8 @@ class Status(str, Enum):
 class SessionCookieKey(str, Enum):
     SESSION = "user_session"
     DT_EXP = "dt_exp"
+
+
+class HandlerTypes(str, Enum):
+    USER = "user"
+    DOCUMENT = "document"
