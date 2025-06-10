@@ -7,11 +7,11 @@ from app.schemas.user_dto import UserDTO
 
 class UserRepository:
     def __init__(self, session: Session):
-        self.session = session
+        self.db = session
 
     def get_user(self, username: str) -> UserDTO | None:
-        stmt = select(UserAccount).where(UserAccount.username==username)
-        user_account = self.session.scalar(stmt)
+        stmt = select(UserAccount).where(UserAccount.username == username)
+        user_account = self.db.scalar(stmt)
         if user_account is None:
             return user_account
         user_dto = UserDTO(
@@ -21,4 +21,3 @@ class UserRepository:
             dt_reg=user_account.dt_reg
         )
         return user_dto
-
