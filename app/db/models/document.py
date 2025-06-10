@@ -18,5 +18,5 @@ class Document(Base):
     user_load: Mapped[UUID] = mapped_column(ForeignKey("user_account.uuid"), nullable=False)
     dt_load: Mapped[datetime]
 
-    user_account: Mapped["UserAccount"] = relationship("User", back_populates="documents")
+    user_account: Mapped["UserAccount"] = relationship("UserAccount", back_populates="documents")
     collections: Mapped[List["CollectionDocuments"]] = relationship("CollectionDocuments", back_populates="document")

@@ -17,5 +17,5 @@ class Collection(Base):
     user_create: Mapped[UUID] = mapped_column(ForeignKey("user_account.uuid"), nullable=False)
     dt_create: Mapped[datetime]
 
-    user_account: Mapped["UserAccount"] = relationship("User", back_populates="collections")
+    user_account: Mapped["UserAccount"] = relationship("UserAccount", back_populates="collections")
     documents: Mapped[List["CollectionDocuments"]] = relationship("CollectionDocuments", back_populates="collection")
