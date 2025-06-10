@@ -5,9 +5,9 @@ from uuid import UUID
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.models.user_account import UserAccount
 from app.db.models.base import Base
 from app.db.models.collection_documents import CollectionDocuments
+from app.db.models.user_account import UserAccount
 
 
 class Collection(Base):
