@@ -1,3 +1,6 @@
+import uuid
+from datetime import datetime
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -21,3 +24,14 @@ class UserRepository:
             dt_reg=user_account.dt_reg
         )
         return user_dto
+
+    def add_user(self, user: NewUserAccount):
+        user_account = UserAccount(
+            uuid=uuid.uuid4(),
+            username=user.username,
+            password_hashed=user.password,
+            dt_reg = datetime.now()
+        )
+        self.db.add(user_account)
+        self.db.commit()
+        self.db.refresh(user_account)
