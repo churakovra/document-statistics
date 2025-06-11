@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from uuid import UUID
 
 
 class SessionIsNoneException(Exception):
@@ -11,6 +12,12 @@ class SessionIsNoneException(Exception):
 
 
 class SessionNotFoundException(Exception):
-    def __init__(self):
-        self.message = "Session not found"
+    def __init__(self, session_uuid: UUID | str):
+        self.message = f"Session {session_uuid} not found"
         self.status_code = HTTPStatus.NOT_FOUND
+
+
+class SessionIsOldException(Exception):
+    def __init__(self, session_uuid: UUID | str):
+        self.message = f"Session {session_uuid} is old"
+        self.status_code = HTTPStatus.INTERNAL_SERVER_ERROR

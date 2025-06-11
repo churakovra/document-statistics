@@ -4,7 +4,6 @@ from fastapi import APIRouter, Response, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 
-from app.config.preferences import DT_STR_FORMAT
 from app.db.database import get_session
 from app.enums.app_enums import SessionCookieKey as sck, HandlerTypes
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException
@@ -36,8 +35,8 @@ async def login(
     user_service = UserService(session)
     try:
         user_session = user_service.auth(user_creds)
-        response.set_cookie(key=sck.SESSION, value=user_session.user_session)
-        response.set_cookie(key=sck.DT_EXP, value=user_session.dt_exp.strftime(DT_STR_FORMAT))
+        response.set_cookie(key=sck.SESSION.value, value=user_session.user_session)
+        response.set_cookie(key=sck.DT_EXP.value, value=str(user_session.dt_exp))
         return UserAccountResponse(message="Success", status_code=HTTPStatus.OK)
     except UserNotFoundException as nf:
         raise HTTPException(status_code=nf.status_code, detail=nf.message)

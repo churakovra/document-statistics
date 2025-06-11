@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.session_exceptions import SessionIsNoneException
+from app.exceptions.session_exceptions import SessionIsNoneException, SessionIsOldException
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException, UserAlreadyExistsException
 from app.repositories.user_repository import UserRepository
 from app.schemas.cookie_session import CookieSession
@@ -31,15 +31,13 @@ class UserService:
             uuid = credentials["uuid"]
             user = user_repo.get_user(username=uuid)
             if user is None:
-                raise UserNotFoundException(credentials["uuid"])
+                raise UserNotFoundException(str(credentials["uuid"]))
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
         return user
 
     def auth(self, user_creds: UserLogin) -> CookieSession:
         user = self.get_user(username=user_creds.username)
-        if user is None:
-            raise UserNotFoundException(user_creds.username)
         if not AuthService.validate_pass(user_creds.password, user.password_hashed):
             raise UserWrongPasswordException()
         app_service = AppService(self.db)
@@ -48,11 +46,14 @@ class UserService:
 
     def check_session(self, cs: CookieSession):
         if cs.user_session is None:
-            raise SessionIsNoneException
+            raise SessionIsNoneException()
         elif cs.dt_exp <= datetime.now():
-            app_service = AppService(self.db)
-            new_session = app_service.refresh_session(cs)
-            return new_session
+            raise SessionIsOldException(cs.user_session)
+
+    def refresh_session(self, cs: CookieSession) -> CookieSession:
+        app_service = AppService(self.db)
+        new_session = app_service.refresh_session(cs)
+        return new_session
 
     def register_user(self, user_creds: NewUserAccount):
         user_repo = UserRepository(self.db)
@@ -73,8 +74,6 @@ class UserService:
     def change_password(self, user_uuid: UUID, ucp: UserChangePassword):
         user_repository = UserRepository(self.db)
         user = self.get_user(uuid=user_uuid)
-        if user is None:
-            raise UserNotFoundException(str(user_uuid))
         if not AuthService.validate_pass(ucp.password_old, user.password_hashed):
             raise UserWrongPasswordException
         password_hashed_new = AuthService.hash_pass(ucp.password_new)
