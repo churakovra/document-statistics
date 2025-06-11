@@ -27,12 +27,12 @@ router = APIRouter()
     }
 )
 async def register(
-        new_usr: NewUserAccount,
+        new_user_creds: NewUserAccount,
         session: Session = Depends(get_session),
 ):
     try:
         user_service = UserService(session)
-        user_service.register_user(new_usr)
-        return UserAccountResponse(message="Success!", status_code=HTTPStatus.CREATED)
+        new_user = user_service.register_user(new_user_creds)
+        return UserAccountResponse(message="Success!", status_code=HTTPStatus.CREATED, user=new_user)
     except UserAlreadyExistsException as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)

@@ -7,6 +7,7 @@ from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPassw
 from app.repositories.user_repository import UserRepository
 from app.schemas.cookie_session import CookieSession
 from app.schemas.new_user import NewUserAccount
+from app.schemas.responses.user_account_response import UserCreds
 from app.schemas.user_login import UserLogin
 from app.services.app_service import AppService
 from app.services.auth_service import AuthService
@@ -43,3 +44,9 @@ class UserService:
         password_hashed = AuthService.hash_pass(user_creds.password)
         user_creds.password = password_hashed
         user_repo.add_user(user_creds)
+        new_user = user_repo.get_user(user_creds.username)
+        return UserCreds(
+            uuid=new_user.uuid,
+            username=new_user.username,
+            dt_reg=new_user.dt_reg
+        )
