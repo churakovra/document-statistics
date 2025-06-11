@@ -20,7 +20,7 @@ class UserService:
     def __init__(self, session: Session):
         self.db = session
 
-    def get_user(self, **credentials) -> UserDTO | None:
+    def get_user(self, **credentials) -> UserDTO:
         user_repo = UserRepository(self.db)
         if "username" in credentials:
             username = credentials["username"]
@@ -34,6 +34,7 @@ class UserService:
                 raise UserNotFoundException(credentials["uuid"])
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
+        return user
 
     def auth(self, user_creds: UserLogin) -> CookieSession:
         user = self.get_user(username=user_creds.username)
@@ -55,18 +56,19 @@ class UserService:
 
     def register_user(self, user_creds: NewUserAccount):
         user_repo = UserRepository(self.db)
-        if self.get_user(username=user_creds.username) is not None:
+        try:
+            self.get_user(username=user_creds.username)
             raise UserAlreadyExistsException(user_creds.username)
-
-        password_hashed = AuthService.hash_pass(user_creds.password)
-        user_creds.password = password_hashed
-        user_repo.add_user(user_creds)
-        new_user = self.get_user(username=user_creds.username)
-        return UserCreds(
-            uuid=new_user.uuid,
-            username=new_user.username,
-            dt_reg=new_user.dt_reg
-        )
+        except UserNotFoundException:
+            password_hashed = AuthService.hash_pass(user_creds.password)
+            user_creds.password = password_hashed
+            user_repo.add_user(user_creds)
+            new_user = self.get_user(username=user_creds.username)
+            return UserCreds(
+                uuid=new_user.uuid,
+                username=new_user.username,
+                dt_reg=new_user.dt_reg
+            )
 
     def change_password(self, user_uuid: UUID, ucp: UserChangePassword):
         user_repository = UserRepository(self.db)
@@ -91,4 +93,3 @@ class UserService:
         # Удаляем профиль пользователя
         user_repository = UserRepository(self.db)
         user_repository.delete_user(user)
-
