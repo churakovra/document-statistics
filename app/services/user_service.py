@@ -24,17 +24,16 @@ class UserService:
         if not AuthService.validate_pass(user_creds.password, user.password_hashed):
             raise UserWrongPasswordException()
         app_service = AppService(self.db)
-        user_session = app_service.get_session(user)
+        user_session = app_service.create_session(user.uuid)
         return user_session
 
     def check_session(self, cs: CookieSession):
         if cs.user_session is None:
             raise SessionIsNoneException
         elif cs.dt_exp <= datetime.now():
-            self.refresh(cs)
-
-    def refresh(self, cs: CookieSession):
-        pass
+            app_service = AppService(self.db)
+            new_session = app_service.refresh_session(cs)
+            return new_session
 
     def register_user(self, user_creds: NewUserAccount):
         user_repo = UserRepository(self.db)

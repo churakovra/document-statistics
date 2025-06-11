@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.orm import Session
 
 from app.config.metrics import METRICS_DESCRIPTION
@@ -5,7 +7,7 @@ from app.config.version import __version__
 from app.enums.app_enums import Status
 from app.repositories.app_repository import AppRepository
 from app.schemas.cookie_session import CookieSession
-from app.schemas.user_dto import UserDTO
+from app.schemas.user_session_dto import UserSessionDTO
 
 
 class AppService:
@@ -19,6 +21,20 @@ class AppService:
             return Status.OK
         return Status.ERROR
 
+    def create_session(self, user_uuid: uuid.UUID) -> CookieSession:
+        app_repository = AppRepository(self.db)
+        user_session = app_repository.create_session(user_uuid)
+        return user_session
+
+    def deactivate_session(self, cs: CookieSession) -> UserSessionDTO:
+        app_repository = AppRepository(self.db)
+        return app_repository.deactivate_session(cs)
+
+    def refresh_session(self, cs: CookieSession) -> CookieSession:
+        old_session = self.deactivate_session(cs)
+        new_session = self.create_session(old_session.uuid_user)
+        return new_session
+
     @staticmethod
     def get_version() -> str:
         version = __version__
@@ -27,8 +43,3 @@ class AppService:
     @staticmethod
     def get_metrics() -> dict[str, str]:
         return METRICS_DESCRIPTION
-
-    def get_session(self, user: UserDTO) -> CookieSession:
-        app_repository = AppRepository(self.db)
-        user_session = app_repository.create_session(user)
-        return user_session

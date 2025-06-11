@@ -13,6 +13,7 @@ class UserSession(Base):
 
     uuid_session: Mapped[UUID] = mapped_column(primary_key=True)
     uuid_user: Mapped[UUID] = mapped_column(ForeignKey("user_account.uuid"), nullable=False)
-    dt_exp: Mapped[datetime] = mapped_column()
+    dt_exp: Mapped[datetime]
+    alive: Mapped[bool] = mapped_column(default=True)
 
     user_account: Mapped["UserAccount"] = relationship("UserAccount", back_populates="session")
