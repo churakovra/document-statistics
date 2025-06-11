@@ -1,4 +1,5 @@
 from .change_password import router as change_password_router
+from .delete_user import router as delete_user_router
 from .documents import router as documents_router
 from .login import router as login_router
 from .logout import router as logout_router
@@ -11,6 +12,7 @@ from .version import router as version_router
 api_routers = [
     change_password_router,
     documents_router,
+    delete_user_router,
     login_router,
     logout_router,
     metrics_router,

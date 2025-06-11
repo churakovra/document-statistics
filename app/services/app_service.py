@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
@@ -21,19 +21,23 @@ class AppService:
             return Status.OK
         return Status.ERROR
 
-    def create_session(self, user_uuid: uuid.UUID) -> CookieSession:
+    def create_session(self, user_uuid: UUID) -> CookieSession:
         app_repository = AppRepository(self.db)
         user_session = app_repository.create_session(user_uuid)
         return user_session
-
-    def deactivate_session(self, cs: CookieSession) -> UserSessionDTO:
-        app_repository = AppRepository(self.db)
-        return app_repository.deactivate_session(cs)
 
     def refresh_session(self, cs: CookieSession) -> CookieSession:
         old_session = self.deactivate_session(cs)
         new_session = self.create_session(old_session.uuid_user)
         return new_session
+
+    def deactivate_session(self, cs: CookieSession) -> UserSessionDTO:
+        app_repository = AppRepository(self.db)
+        return app_repository.deactivate_session(cs)
+
+    def deactivate_user_sessions(self, user_uuid: UUID):
+        app_repository = AppRepository(self.db)
+        app_repository.deactivate_user_sessions(user_uuid)
 
     @staticmethod
     def get_version() -> str:

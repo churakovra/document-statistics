@@ -79,5 +79,16 @@ class UserService:
         user.password_hashed = password_hashed_new
         user_repository.set_new_pass(user)
 
+    def delete_user(self, user_uuid: UUID):
+        user = self.get_user(uuid=user_uuid)
+        # Убиваем все сессии пользователя
+        app_service = AppService(self.db)
+        app_service.deactivate_user_sessions(user.uuid)
 
+        # Удаляем файлы
+        # TODO
+
+        # Удаляем профиль пользователя
+        user_repository = UserRepository(self.db)
+        user_repository.delete_user(user)
 

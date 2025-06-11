@@ -61,3 +61,8 @@ class UserRepository:
         )
         self.db.execute(stmt)
         self.db.commit()
+
+    def delete_user(self, user: UserDTO):
+        # Make & add DeletedUser
+        # Remove UserAccount
+        pass

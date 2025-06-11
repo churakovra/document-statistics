@@ -1,7 +1,8 @@
 import uuid
+from uuid import UUID
 from datetime import datetime, timedelta
 
-from sqlalchemy import text, update, select
+from sqlalchemy import text, update, select, and_
 from sqlalchemy.orm import Session
 
 from app.config.preferences import SESSION_ALIVE_HOURS
@@ -74,3 +75,17 @@ class AppRepository:
         self.db.execute(stmt)
         self.db.commit()
         return session
+
+    def deactivate_user_sessions(self, user_uuid: UUID):
+        stmt = (
+            update(UserSession)
+            .where(
+                and_(
+                    UserSession.uuid_user==user_uuid,
+                    UserSession.alive==True
+                )
+            )
+            .values(alive=False)
+        )
+        self.db.execute(stmt)
+        self.db.commit()
