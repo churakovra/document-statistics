@@ -22,18 +22,21 @@ class UserService:
 
     def get_user(self, **credentials) -> UserDTO:
         user_repo = UserRepository(self.db)
-        if "username" in credentials:
+        if "username" in credentials:  # TODO вынести строки в Enum
             username = credentials["username"]
             user = user_repo.get_user(username=username)
-            if user is None:
-                raise UserNotFoundException(credentials["username"])
         elif "uuid" in credentials:
             uuid = credentials["uuid"]
             user = user_repo.get_user(username=uuid)
-            if user is None:
-                raise UserNotFoundException(str(credentials["uuid"]))
+        elif "uuid_session" in credentials:
+            uuid_session = credentials["uuid_session"]
+            user = user_repo.get_user(uuid_session=uuid_session)
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
+        if user is None:
+            key = [str(key) for key in credentials.keys()][0] # Получаем тип креда
+            value = [str(value) for value in credentials.values()][0] # Получаем значение
+            raise UserNotFoundException(key=key, value=value)
         return user
 
     def auth(self, user_creds: UserLogin) -> CookieSession:

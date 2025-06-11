@@ -29,6 +29,13 @@ class UserRepository:
         elif "uuid" in credentials:
             user_uuid = credentials["uuid"]
             stmt = select(UserAccount).where(UserAccount.uuid == user_uuid)
+        elif "uuid_session" in credentials:
+            uuid_session = credentials["uuid_session"]
+            stmt = (
+                select(UserAccount)
+                .join(UserSession, UserAccount.uuid == UserSession.uuid_user)
+                .where(UserSession.uuid_session==uuid_session)
+            )
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
         user_account = self.db.scalar(stmt)
