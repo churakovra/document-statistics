@@ -3,11 +3,8 @@ from uuid import UUID
 
 
 class SessionIsNoneException(Exception):
-    def __init__(
-            self,
-            message: str = "Unauthorized, session is None"
-    ):
-        self.message = message
+    def __init__(self):
+        self.message = "Unauthorized, session is None"
         self.status_code = HTTPStatus.UNAUTHORIZED
 
 

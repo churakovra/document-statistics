@@ -1,4 +1,6 @@
+from http import HTTPStatus
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends, Cookie
@@ -6,11 +8,12 @@ from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from app.db.database import get_session
-from app.enums.app_enums import SessionCookieKey as sck
+from app.enums.app_enums import SessionCookieKey as sck, HandlerTypes
 from app.exceptions.document_exceptions import DocumentsIsNotFound
 from app.exceptions.session_exceptions import SessionIsNoneException, SessionIsOldException
 from app.exceptions.user_exceptions import UserNotFoundException
 from app.schemas.cookie_session import CookieSession
+from app.schemas.document_dto import DocumentDTO
 from app.services.document_service import DocumentService
 from app.services.user_service import UserService
 
@@ -18,7 +21,17 @@ router = APIRouter()
 
 
 @router.get(
-    path="/documents"
+    path="/documents",
+    tags=[HandlerTypes.DOCUMENT],
+    response_model=dict[UUID, DocumentDTO],
+    status_code=HTTPStatus.OK,
+    summary="Получение всех файлов, загруженных текущим пользователем",
+    description="Проверка сессии; Авторефреш в случае её просрока; Получение списка файлов пользователя",
+    responses={
+        HTTPStatus.OK: {"description": "Файлы получены"},
+        HTTPStatus.UNAUTHORIZED: {"description": "Сессия пользоватя None. Необходима аутентификация"},
+        HTTPStatus.NOT_FOUND: {"description": "Пользователь или Документ не найден"},
+    }
 )
 async def get_documents(
         cs: Annotated[CookieSession, Cookie()],
