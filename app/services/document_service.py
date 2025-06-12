@@ -72,3 +72,11 @@ class DocumentService:
         with open(file=document.path) as doc:
             content = doc.read()
         return content
+
+    def delete_document(self, document_uuid: UUID):
+        document = self._get_document(document_uuid)
+
+        os.remove(document.path)
+
+        document_repository = DocumentRepository(self.db)
+        document_repository.delete_document(document.uuid)

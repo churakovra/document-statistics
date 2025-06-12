@@ -31,3 +31,7 @@ class CollectionService:
     def add_document(self, collection: CollectionDTO, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
         return collection_repository.add_document_to_collection(document_uuid, collection.uuid)
+
+    def remove_document(self, document_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collection_repository.remove_document(document_uuid)

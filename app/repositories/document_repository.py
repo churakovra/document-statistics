@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
 from app.db.models.user_account import UserAccount
@@ -58,3 +58,8 @@ class DocumentRepository:
         self.db.commit()
         self.db.refresh(document)
         return document.uuid
+
+    def delete_document(self, document_uuid):
+        stmt = delete(Document).where(Document.uuid==document_uuid)
+        self.db.execute(stmt)
+        self.db.commit()

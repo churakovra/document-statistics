@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, delete
 from sqlalchemy.orm import Session
 
 from app.db.models.user_account import UserAccount
@@ -103,3 +103,8 @@ class CollectionRepository:
         if collection is None:
             BaseCollectionNotFoundException()
         return self.add_document_to_collection(document_uuid, collection.uuid)
+
+    def remove_document(self, document_uuid: UUID):
+        stmt = delete(CollectionDocuments).where(CollectionDocuments.uuid_document==document_uuid)
+        self.db.execute(stmt)
+        self.db.commit()
