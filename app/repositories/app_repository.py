@@ -64,7 +64,7 @@ class AppRepository:
     def deactivate_session(self, cs: CookieSession):
         session = self.get_session(cs.user_session)
         if session is None:
-            raise SessionNotFoundException
+            raise SessionNotFoundException(cs.user_session)
         if not session.alive:
             return session
         stmt = (

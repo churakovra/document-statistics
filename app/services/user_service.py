@@ -34,8 +34,8 @@ class UserService:
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
         if user is None:
-            key = [str(key) for key in credentials.keys()][0] # Получаем тип креда
-            value = [str(value) for value in credentials.values()][0] # Получаем значение
+            key = [str(key) for key in credentials.keys()][0]  # Получаем тип креда
+            value = [str(value) for value in credentials.values()][0]  # Получаем значение
             raise UserNotFoundException(key=key, value=value)
         return user
 
@@ -47,7 +47,7 @@ class UserService:
         user_session = app_service.create_session(user.uuid)
         return user_session
 
-    def check_session(self, cs: CookieSession):
+    def validate_session(self, cs: CookieSession):
         if cs.user_session is None:
             raise SessionIsNoneException()
         elif cs.dt_exp <= datetime.now():
