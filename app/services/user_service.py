@@ -27,7 +27,7 @@ class UserService:
             user = user_repo.get_user(username=username)
         elif "uuid" in credentials:
             uuid = credentials["uuid"]
-            user = user_repo.get_user(username=uuid)
+            user = user_repo.get_user(uuid=uuid)
         elif "uuid_session" in credentials:
             uuid_session = credentials["uuid_session"]
             user = user_repo.get_user(uuid_session=uuid_session)
