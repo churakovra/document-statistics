@@ -66,3 +66,9 @@ class DocumentService:
         with open(file_path, "wb") as out_file:
             out_file.write(content_bytes)
         return file_path
+
+    def read_document(self, document_uuid: UUID) -> str:
+        document = self._get_document(document_uuid)
+        with open(file=document.path) as doc:
+            content = doc.read()
+        return content
