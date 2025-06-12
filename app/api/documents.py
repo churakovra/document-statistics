@@ -9,7 +9,7 @@ from app.db.database import get_session
 from app.dependencies.auth import get_current_user
 from app.enums.app_enums import HandlerTypes
 from app.exceptions.document_exceptions import DocumentsNotFoundException
-from app.schemas.document_dto import DocumentDTO
+from app.schemas.document_response import DocumentResponse
 from app.schemas.user_dto import UserDTO
 from app.services.document_service import DocumentService
 
@@ -19,7 +19,7 @@ router = APIRouter()
 @router.get(
     path="/documents",
     tags=[HandlerTypes.DOCUMENT],
-    response_model=dict[UUID, DocumentDTO],
+    response_model=dict[UUID, DocumentResponse],
     status_code=HTTPStatus.OK,
     summary="Получение списка файлов пользователя ",
     description="Получение всех файлов, загруженных текущим пользователем",

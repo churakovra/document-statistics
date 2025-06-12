@@ -27,8 +27,8 @@ class DocumentRepository:
         for document in self.db.scalars(stmt):
             document_dto = DocumentDTO(
                 uuid=document.uuid,
-                label=document.path.split("/").pop(),
-                user_load=user.username,
+                path=document.path,
+                user_load=user.uuid,
                 dt_load=document.dt_load
             )
             documents[document_dto.uuid] = document_dto
@@ -41,8 +41,8 @@ class DocumentRepository:
             return document
         document_dto = DocumentDTO(
             uuid=document.uuid,
-            label=document.path.split("/").pop(),
-            user_load=str(document.user_load),
+            path=document.path,
+            user_load=document.user_load,
             dt_load=document.dt_load
         )
         return document_dto

@@ -4,8 +4,8 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class DocumentDTO(BaseModel):
+class DocumentResponse(BaseModel):
     uuid: UUID
-    path: str
-    user_load: UUID # username
+    label: str
+    user_load: str
     dt_load: datetime

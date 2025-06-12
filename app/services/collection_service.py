@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException
 from app.repositories.collectoin_repository import CollectionRepository
 from app.schemas.collection_dto import CollectionDTO
-from app.schemas.document_dto import DocumentDTO
 from app.schemas.user_dto import UserDTO
 
 
@@ -25,10 +24,10 @@ class CollectionService:
         new_collection_dto = collection_repository.create_collection(user_uuid=user.uuid, base=True)
         return new_collection_dto
 
-    def add_document_to_base_collection(self, user: UserDTO, document: DocumentDTO) -> UUID:
+    def add_document_to_base_collection(self, user: UserDTO, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
-        return collection_repository.add_document_to_base_collection(document.uuid, user.uuid)
+        return collection_repository.add_document_to_base_collection(document_uuid, user.uuid)
 
-    def add_document(self, document: DocumentDTO, collection: CollectionDTO) -> UUID:
+    def add_document(self, collection: CollectionDTO, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
-        return collection_repository.add_document_to_collection(document.uuid, collection.uuid)
+        return collection_repository.add_document_to_collection(document_uuid, collection.uuid)
