@@ -7,6 +7,7 @@ from .metrics import router as metrics_router
 from .register import router as register_router
 from .root import router as root_router
 from .status import router as status_router
+from .upload_document import router as upload_document_router
 from .version import router as version_router
 
 api_routers = [
@@ -19,5 +20,6 @@ api_routers = [
     register_router,
     root_router,
     status_router,
+    upload_document_router,
     version_router,
 ]

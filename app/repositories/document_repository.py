@@ -1,3 +1,5 @@
+import uuid
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import select
@@ -31,3 +33,28 @@ class DocumentRepository:
             )
             documents[document_dto.uuid] = document_dto
         return documents
+
+    def get_document(self, document_uuid: UUID) -> DocumentDTO | None:
+        stmt = select(Document).where(Document.uuid == document_uuid)
+        document = self.db.scalar(stmt)
+        if document is None:
+            return document
+        document_dto = DocumentDTO(
+            uuid=document.uuid,
+            label=document.path.split("/").pop(),
+            user_load=str(document.user_load),
+            dt_load=document.dt_load
+        )
+        return document_dto
+
+    def add_document(self, path: str, user: UserDTO) -> UUID:
+        document = Document(
+            uuid=uuid.uuid4(),
+            path=path,
+            user_load=user.uuid,
+            dt_load=datetime.now()
+        )
+        self.db.add(document)
+        self.db.commit()
+        self.db.refresh(document)
+        return document.uuid

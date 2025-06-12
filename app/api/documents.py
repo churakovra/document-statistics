@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_session
 from app.dependencies.auth import get_current_user
 from app.enums.app_enums import HandlerTypes
-from app.exceptions.document_exceptions import DocumentsIsNotFound
+from app.exceptions.document_exceptions import DocumentsNotFoundException
 from app.schemas.document_dto import DocumentDTO
 from app.schemas.user_dto import UserDTO
 from app.services.document_service import DocumentService
@@ -37,5 +37,5 @@ async def get_documents(
     try:
         documents = document_service.get_user_documents(user)
         return documents
-    except DocumentsIsNotFound as nf:
+    except DocumentsNotFoundException as nf:
         raise HTTPException(status_code=nf.status_code, detail=nf.message)
