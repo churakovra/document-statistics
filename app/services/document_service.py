@@ -14,7 +14,7 @@ from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.document.document_dto import DocumentDTO
 from app.schemas.document.document_response import DocumentResponse
 from app.schemas.user.user_dto import UserDTO
-from app.utils.statistics import Statistics
+from app.services.statistics_service import StatisticsService
 
 
 class DocumentService:
@@ -108,10 +108,11 @@ class DocumentService:
         return collections_uuid
 
     def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, dict[str, float]]:
-        statistics = Statistics()
+        statistics = StatisticsService()
         documents = self.read_documents(documents_uuid)
         tf = statistics.get_tf(documents[document_uuid])
         idf = statistics.get_idf(tf, documents)
+        idf = statistics.sort_statistics(idf)
 
         statistics_repository = StatisticsRepository(self.db)
         for word, stat in idf.items():

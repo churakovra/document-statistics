@@ -1,8 +1,10 @@
 from math import log
 from uuid import UUID
 
+length = 50
 
-class Statistics:
+
+class StatisticsService:
     def get_tf(self, words: list[str]) -> dict[str, dict[str, float]]:
         if len(words) <= 0:
             raise ValueError("В строке должно быть хотя бы 1 слово")
@@ -35,3 +37,17 @@ class Statistics:
             tf[word]["idf"] = log(len_documents / document_count)
             document_count = 0
         return tf
+
+    def sort_statistics(self, statistics: dict[str, dict[str, float]]) -> dict[str, dict[str, float]]:
+        response = dict()
+        tfs_set = {tf["tf"] for tf in statistics.values()}
+        tfs = [tf for tf in tfs_set]
+        tfs.sort()
+        while len(response) < length or len(response) < len(statistics):
+            for word, stat in statistics.items():
+                if stat["tf"] <= tfs[0]:
+                    response[word] = stat
+                if len(response) >= length or len(response) >= len(statistics):
+                    return response
+            tfs.remove(tfs[0])
+        return response

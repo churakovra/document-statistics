@@ -11,7 +11,7 @@ from app.schemas.collection.collection_dto import CollectionDTO
 from app.schemas.collection.collection_response import CollectionResponse
 from app.schemas.user.user_dto import UserDTO
 from app.services.document_service import DocumentService
-from app.utils.statistics import Statistics
+from app.services.statistics_service import StatisticsService
 
 
 class CollectionService:
@@ -85,9 +85,10 @@ class CollectionService:
         collection = list[str]()
         for words in documents.values():
             collection.extend(words)
-        statistics = Statistics()
+        statistics = StatisticsService()
         tf = statistics.get_tf(collection)
         idf = statistics.get_idf(tf, documents)
+        idf = statistics.sort_statistics(idf)
 
         statistics_repository = StatisticsRepository(self.db)
         for word, stat in idf.items():
