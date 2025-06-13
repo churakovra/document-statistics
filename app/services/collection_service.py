@@ -2,10 +2,13 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException
+from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
+    CollectionsNotFoundException
 from app.repositories.collectoin_repository import CollectionRepository
 from app.schemas.collection.collection_dto import CollectionDTO
+from app.schemas.collection.collection_response import CollectionResponse
 from app.schemas.user.user_dto import UserDTO
+from app.services.document_service import DocumentService
 
 
 class CollectionService:
@@ -16,7 +19,7 @@ class CollectionService:
         collection_repository = CollectionRepository(self.db)
         collection = collection_repository.get_base_collection(user_uuid)
         if collection is None:
-            raise BaseCollectionNotFoundException()
+            raise BaseCollectionNotFoundException(user_uuid)
         return collection
 
     def make_base_collection(self, user: UserDTO):
@@ -42,3 +45,32 @@ class CollectionService:
         if len(documents_uuid) <= 0:
             raise CollectionEmptyException(collection_uuid)
         return documents_uuid
+
+    def _get_collections(self, user_uuid: UUID) -> list[CollectionDTO]:
+        collection_repository = CollectionRepository(self.db)
+        collections = collection_repository.get_collections(user_uuid)
+        if len(collections) <= 0:
+            raise CollectionsNotFoundException(user_uuid)
+        return collections
+
+    def get_collections_with_documents(self, user: UserDTO) -> list[CollectionResponse]:
+        collections = self._get_collections(user.uuid)
+        documents_uuid = [self.get_collection_documents(collection.uuid) for collection in collections]
+
+        document_service = DocumentService(self.db)
+        response = list()
+
+        for index, collection in enumerate(documents_uuid):
+            documents = list()
+            for uuid in collection:
+                document = document_service.get_document(uuid, user.username)
+                documents.append(document)
+
+            response.append(
+                CollectionResponse(
+                    collection_uuid=collections[index].uuid,
+                    documents=documents
+                )
+            )
+
+        return response

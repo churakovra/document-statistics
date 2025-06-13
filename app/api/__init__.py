@@ -1,4 +1,5 @@
 from .change_password import router as change_password_router
+from .collections import router as collections_router
 from .delete_document import router as delete_document_router
 from .delete_user import router as delete_user_router
 from .documents import router as documents_router
@@ -15,6 +16,7 @@ from .version import router as version_router
 
 api_routers = [
     change_password_router,
+    collections_router,
     delete_document_router,
     delete_user_router,
     documents_router,

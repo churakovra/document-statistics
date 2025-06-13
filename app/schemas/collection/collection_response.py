@@ -6,5 +6,5 @@ from app.schemas.document.document_response import DocumentResponse
 
 
 class CollectionResponse(BaseModel):
-    uuid: UUID
+    collection_uuid: UUID
     documents: list[DocumentResponse]
