@@ -121,6 +121,19 @@ class CollectionRepository:
         self.db.execute(stmt)
         self.db.commit()
 
+    def remove_document_from_collection(self, collection_uuid: UUID, document_uuid: UUID):
+        stmt = (
+            delete(CollectionDocuments)
+            .where(
+                and_(
+                    CollectionDocuments.uuid_collection == collection_uuid,
+                    CollectionDocuments.uuid_document == document_uuid
+                )
+            )
+        )
+        self.db.execute(stmt)
+        self.db.commit()
+
     def get_collection_document(self, collection_uuid: UUID, document_uuid: UUID) -> UUID | None:
         stmt = (
             select(CollectionDocuments.uuid_document)

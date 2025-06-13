@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
-    CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException
-from app.repositories.collectoin_repository import CollectionRepository
+    CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException, \
+    BaseCollectionDocumentRemoveException
+from app.repositories.collection_repository import CollectionRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
 from app.schemas.collection.collection_response import CollectionResponse
@@ -43,9 +44,15 @@ class CollectionService:
         return (collection_repository
                 .add_document_to_collection(collection_uuid=collection_uuid, document_uuid=document_uuid))
 
-    def remove_document(self, document_uuid: UUID):
+    def remove_document(self, collection_uuid: UUID, document_uuid: UUID, user: UserDTO):
         collection_repository = CollectionRepository(self.db)
-        collection_repository.remove_document(document_uuid)
+        collection = self._get_collection(collection_uuid)
+        if not collection.base:
+            (collection_repository.
+             remove_document_from_collection(collection_uuid=collection_uuid, document_uuid=document_uuid))
+            self.add_document_to_base_collection(document_uuid=document_uuid, user=user)
+        else:
+            raise BaseCollectionDocumentRemoveException(collection_uuid=collection_uuid, document_uuid=document_uuid)
 
     def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
         collection_repository = CollectionRepository(self.db)
