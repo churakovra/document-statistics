@@ -12,5 +12,6 @@ class SessionCookieKey(str, Enum):
 
 
 class HandlerTypes(str, Enum):
-    USER = "user"
-    DOCUMENT = "document"
+    USERS = "users"
+    DOCUMENTS = "documents"
+    COLLECTIONS = "collections"

@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.delete(
     path="/user/{user_id}",
-    tags=[HandlerTypes.USER],
+    tags=[HandlerTypes.USERS],
     status_code=HTTPStatus.NO_CONTENT,
     summary="Удаление пользователя",
     description="Удаление аккаунта. Пользователь должен быть авторизован. Удалить можно только свой аккаунт",

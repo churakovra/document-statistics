@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.delete(
     path="/documents/{document_id}",
-    tags=[HandlerTypes.DOCUMENT],
+    tags=[HandlerTypes.DOCUMENTS],
     status_code=HTTPStatus.NO_CONTENT
 )
 async def delete_document(

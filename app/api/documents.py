@@ -18,7 +18,7 @@ router = APIRouter()
 
 @router.get(
     path="/documents",
-    tags=[HandlerTypes.DOCUMENT],
+    tags=[HandlerTypes.DOCUMENTS],
     response_model=dict[UUID, DocumentResponse],
     status_code=HTTPStatus.OK,
     summary="Получение списка файлов пользователя ",

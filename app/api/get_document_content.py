@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.get(
     path="/documents/{document_id}",
-    tags=[HandlerTypes.DOCUMENT],
+    tags=[HandlerTypes.DOCUMENTS],
     response_model=str,
     status_code=HTTPStatus.OK,
     summary="Получить содержание документа",

@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post(
     path="/login",
-    tags=[HandlerTypes.USER],
+    tags=[HandlerTypes.USERS],
     response_model=UserAccountResponse,
     status_code=HTTPStatus.OK,
     summary="Аутентификация пользователя",

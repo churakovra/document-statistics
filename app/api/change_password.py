@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.patch(
     path="/user/{user_id}",
-    tags=[HandlerTypes.USER],
+    tags=[HandlerTypes.USERS],
     response_model=UserAccountResponse,
     status_code=HTTPStatus.OK,
     summary="Изменение пароля",

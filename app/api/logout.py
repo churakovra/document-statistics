@@ -18,7 +18,7 @@ router = APIRouter()
 
 @router.get(
     path="/logout",
-    tags=[HandlerTypes.USER],
+    tags=[HandlerTypes.USERS],
     response_model=UserAccountResponse,
     status_code=HTTPStatus.OK,
     summary="Завершение сессии пользователя",

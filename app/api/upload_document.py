@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.post(
     path="/documents/upload",
-    tags=[HandlerTypes.DOCUMENT],
+    tags=[HandlerTypes.DOCUMENTS],
     response_model=DocumentUploadResponse,
     status_code=HTTPStatus.OK,
     summary="Загрузка документа",
