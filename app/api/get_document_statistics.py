@@ -10,7 +10,7 @@ from app.dependencies.auth import get_current_user
 from app.dependencies.document_validate import validate_document
 from app.enums.app_enums import HandlerTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException
-from app.schemas.statistics_response import StatisticsResponse
+from app.schemas.statistics.statistics_response import StatisticsResponse
 from app.schemas.user.user_dto import UserDTO
 from app.services.collection_service import CollectionService
 from app.services.document_service import DocumentService

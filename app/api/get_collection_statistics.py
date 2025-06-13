@@ -11,7 +11,7 @@ from app.dependencies.collection_validate import validate_collection
 from app.enums.app_enums import HandlerTypes
 from app.exceptions.collection_exceptions import CollectionEmptyException
 from app.exceptions.document_exceptions import DocumentNotFoundException
-from app.schemas.statistics_response import StatisticsResponse
+from app.schemas.statistics.statistics_response import StatisticsResponse
 from app.schemas.user.user_dto import UserDTO
 from app.services.collection_service import CollectionService
 

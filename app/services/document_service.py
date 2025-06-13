@@ -108,16 +108,21 @@ class DocumentService:
         return collections_uuid
 
     def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, dict[str, float]]:
-        statistics = StatisticsService()
-        documents = self.read_documents(documents_uuid)
-        tf = statistics.get_tf(documents[document_uuid])
-        idf = statistics.get_idf(tf, documents)
-        idf = statistics.sort_statistics(idf)
-
+        statistics_service = StatisticsService()
         statistics_repository = StatisticsRepository(self.db)
+        statistics = statistics_repository.get_statistics(document_uuid)
+        if len(statistics) > 0:
+            response = statistics_service.get_statistics_response(statistics)
+            return response
+
+        documents = self.read_documents(documents_uuid)
+        tf = statistics_service.get_tf(documents[document_uuid])
+        idf = statistics_service.get_idf(tf, documents)
+        idf = statistics_service.sort_statistics(idf)
+
         for word, stat in idf.items():
             statistics_repository.add_statistics(
-                stat_type=StatisticsTypes.DOCUMENT.value,
+                stat_type=StatisticsTypes.COLLECTION.value,  # Статистика документа в коллекции
                 source_uuid=document_uuid,
                 word=word,
                 tf=stat["tf"],
