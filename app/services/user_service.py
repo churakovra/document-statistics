@@ -7,11 +7,11 @@ from app.exceptions.session_exceptions import SessionIsNoneException, SessionIsO
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException, UserAlreadyExistsException
 from app.repositories.user_repository import UserRepository
 from app.schemas.cookie_session import CookieSession
-from app.schemas.new_user import NewUserAccount
-from app.schemas.responses.user_account_response import UserCreds
-from app.schemas.user_change_password import UserChangePassword
-from app.schemas.user_dto import UserDTO
-from app.schemas.user_login import UserLogin
+from app.schemas.user.new_user import NewUserAccount
+from app.schemas.user.user_account_response import UserCreds
+from app.schemas.user.user_change_password import UserChangePassword
+from app.schemas.user.user_dto import UserDTO
+from app.schemas.user.user_login import UserLogin
 from app.services.app_service import AppService
 from app.services.auth_service import AuthService
 

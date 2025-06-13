@@ -9,7 +9,7 @@ from app.db.database import get_session
 from app.dependencies.auth import get_current_user
 from app.enums.app_enums import HandlerTypes
 from app.exceptions.document_exceptions import DocumentNotFoundException
-from app.schemas.user_dto import UserDTO
+from app.schemas.user.user_dto import UserDTO
 from app.services.collection_service import CollectionService
 from app.services.document_service import DocumentService
 

@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from app.db.database import get_session
 from app.enums.app_enums import HandlerTypes as ht
 from app.exceptions.user_exceptions import UserAlreadyExistsException
-from app.schemas.new_user import NewUserAccount
-from app.schemas.responses.user_account_response import UserAccountResponse
+from app.schemas.user.new_user import NewUserAccount
+from app.schemas.user.user_account_response import UserAccountResponse
 from app.services.user_service import UserService
 
 router = APIRouter()

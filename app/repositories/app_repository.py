@@ -18,7 +18,7 @@ from app.db.models.statistics import Statistics
 from app.exceptions.session_exceptions import SessionNotFoundException
 
 from app.schemas.cookie_session import CookieSession
-from app.schemas.user_session_dto import UserSessionDTO
+from app.schemas.user.user_session_dto import UserSessionDTO
 
 
 class AppRepository:

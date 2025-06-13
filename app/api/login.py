@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from app.db.database import get_session
 from app.enums.app_enums import SessionCookieKey as sck, HandlerTypes
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException
-from app.schemas.responses.user_account_response import UserAccountResponse
-from app.schemas.user_login import UserLogin
+from app.schemas.user.user_account_response import UserAccountResponse
+from app.schemas.user.user_login import UserLogin
 from app.services.user_service import UserService
 
 router = APIRouter()

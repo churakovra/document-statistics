@@ -10,7 +10,7 @@ from app.db.database import get_session
 from app.enums.app_enums import SessionCookieKey as sck, HandlerTypes
 from app.exceptions.session_exceptions import SessionNotFoundException
 from app.schemas.cookie_session import CookieSession
-from app.schemas.responses.user_account_response import UserAccountResponse
+from app.schemas.user.user_account_response import UserAccountResponse
 from app.services.app_service import AppService
 
 router = APIRouter()

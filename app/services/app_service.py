@@ -7,7 +7,7 @@ from app.config.version import __version__
 from app.enums.app_enums import Status
 from app.repositories.app_repository import AppRepository
 from app.schemas.cookie_session import CookieSession
-from app.schemas.user_session_dto import UserSessionDTO
+from app.schemas.user.user_session_dto import UserSessionDTO
 
 
 class AppService:

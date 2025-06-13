@@ -1,5 +1,4 @@
 import uuid
-from uuid import UUID
 from datetime import datetime
 
 from sqlalchemy import select, update
@@ -8,14 +7,9 @@ from sqlalchemy.orm import Session
 from app.db.models.user_account import UserAccount
 from app.db.models.user_session import UserSession
 
-from app.db.models.document import Document
-from app.db.models.collection import Collection
-from app.db.models.collection_documents import CollectionDocuments
+from app.schemas.user.new_user import NewUserAccount
 
-from app.db.models.statistics import Statistics
-from app.schemas.new_user import NewUserAccount
-
-from app.schemas.user_dto import UserDTO
+from app.schemas.user.user_dto import UserDTO
 
 
 class UserRepository:
