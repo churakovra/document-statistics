@@ -54,6 +54,9 @@ class DocumentService:
             dt_load=document.dt_load
         )
 
+    def get_documents(self, documents_uuid: list[UUID], username: str) -> list[DocumentResponse]:
+        return [self.get_document(document_uuid, username) for document_uuid in documents_uuid]
+
     async def upload_document(self, document: UploadFile, user: UserDTO) -> UUID:
         file_path = await self.write_document(document, user.username)
         document_repository = DocumentRepository(self.db)

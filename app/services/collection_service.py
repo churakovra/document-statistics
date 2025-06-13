@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
-    CollectionsNotFoundException
+    CollectionsNotFoundException, CollectionNotFoundException
 from app.repositories.collectoin_repository import CollectionRepository
 from app.schemas.collection.collection_dto import CollectionDTO
 from app.schemas.collection.collection_response import CollectionResponse
@@ -53,6 +53,13 @@ class CollectionService:
             raise CollectionsNotFoundException(user_uuid)
         return collections
 
+    def _get_collection(self, collection_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collection = collection_repository.get_collection(collection_uuid)
+        if collection is None:
+            raise CollectionNotFoundException(collection_uuid)
+        return collection
+
     def get_collections_with_documents(self, user: UserDTO) -> list[CollectionResponse]:
         collections = self._get_collections(user.uuid)
         documents_uuid = [self.get_collection_documents(collection.uuid) for collection in collections]
@@ -61,11 +68,7 @@ class CollectionService:
         response = list()
 
         for index, collection in enumerate(documents_uuid):
-            documents = list()
-            for uuid in collection:
-                document = document_service.get_document(uuid, user.username)
-                documents.append(document)
-
+            documents = document_service.get_documents(collection, user.username)
             response.append(
                 CollectionResponse(
                     collection_uuid=collections[index].uuid,

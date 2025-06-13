@@ -18,3 +18,9 @@ class CollectionsNotFoundException(Exception):
     def __init__(self, user_uuid: UUID):
         self.message = f"User {user_uuid} collections  were not found"
         self.status_code = HTTPStatus.NOT_FOUND
+
+
+class CollectionNotFoundException(Exception):
+    def __init__(self, user_uuid: UUID):
+        self.message = f"Collection {user_uuid} were not found"
+        self.status_code = HTTPStatus.NOT_FOUND

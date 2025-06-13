@@ -21,6 +21,18 @@ class CollectionRepository:
     def __init__(self, session: Session):
         self.db = session
 
+    def get_collection(self, collection_uuid: UUID) -> CollectionDTO | None:
+        stmt = select(Collection).where(Collection.uuid == collection_uuid)
+        collection = self.db.scalar(stmt)
+        if collection is None:
+            return collection
+        return CollectionDTO(
+            uuid=collection.uuid,
+            user_create=collection.user_create,
+            dt_create=collection.dt_create,
+            base=collection.base
+        )
+
     def get_collections(self, user_uuid: UUID) -> list[CollectionDTO]:
         stmt = (
             select(Collection)
@@ -105,12 +117,12 @@ class CollectionRepository:
         return self.add_document_to_collection(document_uuid, collection.uuid)
 
     def remove_document(self, document_uuid: UUID):
-        stmt = delete(CollectionDocuments).where(CollectionDocuments.uuid_document==document_uuid)
+        stmt = delete(CollectionDocuments).where(CollectionDocuments.uuid_document == document_uuid)
         self.db.execute(stmt)
         self.db.commit()
 
     def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
-        stmt = select(CollectionDocuments.uuid_document).where(CollectionDocuments.uuid_collection==collection_uuid)
+        stmt = select(CollectionDocuments.uuid_document).where(CollectionDocuments.uuid_collection == collection_uuid)
         documents = list[UUID]()
         for document_uuid in self.db.scalars(stmt):
             documents.append(document_uuid)
