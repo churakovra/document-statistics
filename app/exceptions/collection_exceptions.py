@@ -24,3 +24,9 @@ class CollectionNotFoundException(Exception):
     def __init__(self, user_uuid: UUID):
         self.message = f"Collection {user_uuid} were not found"
         self.status_code = HTTPStatus.NOT_FOUND
+
+
+class CollectionAlreadyHasDocumentException(Exception):
+    def __init__(self, collection_uuid: UUID, document_uuid: UUID):
+        self.message = f"Collection {collection_uuid} already has document {document_uuid}"
+        self.status_code = HTTPStatus.CONFLICT

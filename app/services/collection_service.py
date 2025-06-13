@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
-    CollectionsNotFoundException, CollectionNotFoundException
+    CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException
 from app.repositories.collectoin_repository import CollectionRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
@@ -34,9 +34,14 @@ class CollectionService:
         collection_repository = CollectionRepository(self.db)
         return collection_repository.add_document_to_base_collection(document_uuid, user.uuid)
 
-    def add_document(self, collection: CollectionDTO, document_uuid: UUID) -> UUID:
+    def add_document(self, collection_uuid: UUID, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
-        return collection_repository.add_document_to_collection(document_uuid, collection.uuid)
+        collection_document = (collection_repository
+                               .get_collection_document(collection_uuid=collection_uuid, document_uuid=document_uuid))
+        if collection_document is not None:
+            raise CollectionAlreadyHasDocumentException(collection_uuid=collection_uuid, document_uuid=document_uuid)
+        return (collection_repository
+                .add_document_to_collection(collection_uuid=collection_uuid, document_uuid=document_uuid))
 
     def remove_document(self, document_uuid: UUID):
         collection_repository = CollectionRepository(self.db)

@@ -98,7 +98,7 @@ class CollectionRepository:
         )
         return new_collection_dto
 
-    def add_document_to_collection(self, document_uuid: UUID, collection_uuid: UUID) -> UUID:
+    def add_document_to_collection(self, collection_uuid: UUID, document_uuid: UUID) -> UUID:
         collection_document = CollectionDocuments(
             uuid=uuid.uuid4(),
             uuid_collection=collection_uuid,
@@ -113,13 +113,26 @@ class CollectionRepository:
     def add_document_to_base_collection(self, document_uuid: UUID, user_uuid: UUID) -> UUID:
         collection = self.get_base_collection(user_uuid)
         if collection is None:
-            BaseCollectionNotFoundException()
+            BaseCollectionNotFoundException(user_uuid)
         return self.add_document_to_collection(document_uuid, collection.uuid)
 
     def remove_document(self, document_uuid: UUID):
         stmt = delete(CollectionDocuments).where(CollectionDocuments.uuid_document == document_uuid)
         self.db.execute(stmt)
         self.db.commit()
+
+    def get_collection_document(self, collection_uuid: UUID, document_uuid: UUID) -> UUID | None:
+        stmt = (
+            select(CollectionDocuments.uuid_document)
+            .where(
+                and_(
+                    CollectionDocuments.uuid_collection == collection_uuid,
+                    CollectionDocuments.uuid_document == document_uuid
+                )
+            )
+        )
+        collection_uuid = self.db.scalar(stmt)
+        return collection_uuid
 
     def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
         stmt = select(CollectionDocuments.uuid_document).where(CollectionDocuments.uuid_collection == collection_uuid)
