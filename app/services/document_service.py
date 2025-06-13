@@ -6,9 +6,11 @@ from uuid import UUID
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
+from app.enums.app_enums import StatisticsTypes
 from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException, \
     DocumentCollectionsNotFoundException
 from app.repositories.document_repository import DocumentRepository
+from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.document.document_dto import DocumentDTO
 from app.schemas.document.document_response import DocumentResponse
 from app.schemas.user.user_dto import UserDTO
@@ -110,4 +112,15 @@ class DocumentService:
         documents = self.read_documents(documents_uuid)
         tf = statistics.get_tf(documents[document_uuid])
         idf = statistics.get_idf(tf, documents)
+
+        statistics_repository = StatisticsRepository(self.db)
+        for word, stat in idf.items():
+            statistics_repository.add_statistics(
+                stat_type=StatisticsTypes.DOCUMENT.value,
+                source_uuid=document_uuid,
+                word=word,
+                tf=stat["tf"],
+                idf=stat["idf"]
+            )
+
         return idf

@@ -2,9 +2,11 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
+from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
     CollectionsNotFoundException, CollectionNotFoundException
 from app.repositories.collectoin_repository import CollectionRepository
+from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
 from app.schemas.collection.collection_response import CollectionResponse
 from app.schemas.user.user_dto import UserDTO
@@ -86,4 +88,15 @@ class CollectionService:
         statistics = Statistics()
         tf = statistics.get_tf(collection)
         idf = statistics.get_idf(tf, documents)
+
+        statistics_repository = StatisticsRepository(self.db)
+        for word, stat in idf.items():
+            statistics_repository.add_statistics(
+                stat_type=StatisticsTypes.COLLECTION.value,  # Статистика документа в коллекции,
+                source_uuid=collection_uuid,
+                word=word,
+                tf=stat["tf"],
+                idf=stat["idf"]
+            )
+
         return idf
