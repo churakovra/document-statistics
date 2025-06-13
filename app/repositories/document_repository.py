@@ -59,8 +59,8 @@ class DocumentRepository:
         self.db.refresh(document)
         return document.uuid
 
-    def delete_document(self, document_uuid):
-        stmt = delete(Document).where(Document.uuid==document_uuid)
+    def delete_document(self, document_uuid: UUID):
+        stmt = delete(Document).where(Document.uuid == document_uuid)
         self.db.execute(stmt)
         self.db.commit()
 

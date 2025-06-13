@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -50,7 +50,7 @@ class UserService:
     def validate_session(self, cs: CookieSession):
         if cs.user_session is None:
             raise SessionIsNoneException()
-        elif cs.dt_exp <= datetime.now():
+        elif cs.dt_exp <= datetime.now(timezone.utc).astimezone():
             raise SessionIsOldException(cs.user_session)
 
     def refresh_session(self, cs: CookieSession) -> CookieSession:

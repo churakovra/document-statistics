@@ -1,6 +1,6 @@
 import uuid
 from uuid import UUID
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import text, update, select, and_
 from sqlalchemy.orm import Session
@@ -37,7 +37,7 @@ class AppRepository:
         user_session = UserSession(
             uuid_session=uuid.uuid4(),
             uuid_user=user_uuid,
-            dt_exp=datetime.now() + timedelta(hours=SESSION_ALIVE_HOURS)
+            dt_exp=datetime.now(timezone.utc).astimezone() + timedelta(hours=SESSION_ALIVE_HOURS)
         )
         self.db.add(user_session)
         self.db.commit()
