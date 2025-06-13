@@ -43,12 +43,12 @@ class AppRepository:
         self.db.commit()
         self.db.refresh(user_session)
         user_session_reply = CookieSession(
-            user_session=str(user_session.uuid_session),
+            user_session=user_session.uuid_session,
             dt_exp=user_session.dt_exp
         )
         return user_session_reply
 
-    def get_session(self, us: str) -> UserSessionDTO | None:
+    def get_session(self, us: UUID) -> UserSessionDTO | None:
         stmt = select(UserSession).where(UserSession.uuid_session == us)
         user_session = self.db.scalar(stmt)
         if user_session is None:
@@ -81,8 +81,8 @@ class AppRepository:
             update(UserSession)
             .where(
                 and_(
-                    UserSession.uuid_user==user_uuid,
-                    UserSession.alive==True
+                    UserSession.uuid_user == user_uuid,
+                    UserSession.alive == True
                 )
             )
             .values(alive=False)

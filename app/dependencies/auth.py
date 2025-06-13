@@ -27,7 +27,7 @@ def get_current_user(
     except SessionIsOldException as so:
         # Refresh session
         new_session = user_service.refresh_session(cs)
-        response.set_cookie(key=sck.SESSION.value, value=new_session.user_session)
+        response.set_cookie(key=sck.SESSION.value, value=str(new_session.user_session))
         response.set_cookie(key=sck.DT_EXP.value, value=str(new_session.dt_exp))
         cs = new_session
 
