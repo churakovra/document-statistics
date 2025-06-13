@@ -33,7 +33,7 @@ async def upload_document(
 ):
     collection_service = CollectionService(session)
     try:
-        collection = collection_service.check_base_collection(user)
+        collection = collection_service.get_base_collection(user.uuid)
     except BaseCollectionNotFoundException:
         collection = collection_service.make_base_collection(user)
 

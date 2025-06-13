@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.collection_exceptions import BaseCollectionNotFoundException
+from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException
 from app.repositories.collectoin_repository import CollectionRepository
 from app.schemas.collection_dto import CollectionDTO
 from app.schemas.user_dto import UserDTO
@@ -12,12 +12,12 @@ class CollectionService:
     def __init__(self, session: Session):
         self.db = session
 
-    def check_base_collection(self, user: UserDTO) -> CollectionDTO:
+    def get_base_collection(self, user_uuid: UUID) -> CollectionDTO:
         collection_repository = CollectionRepository(self.db)
-        base_collection = collection_repository.get_base_collection(user_uuid=user.uuid)
-        if base_collection is None:
+        collection = collection_repository.get_base_collection(user_uuid)
+        if collection is None:
             raise BaseCollectionNotFoundException()
-        return base_collection
+        return collection
 
     def make_base_collection(self, user: UserDTO):
         collection_repository = CollectionRepository(self.db)
@@ -35,3 +35,10 @@ class CollectionService:
     def remove_document(self, document_uuid: UUID):
         collection_repository = CollectionRepository(self.db)
         collection_repository.remove_document(document_uuid)
+
+    def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
+        collection_repository = CollectionRepository(self.db)
+        documents_uuid = collection_repository.get_collection_documents(collection_uuid)
+        if len(documents_uuid) <= 0:
+            raise CollectionEmptyException(collection_uuid)
+        return documents_uuid
