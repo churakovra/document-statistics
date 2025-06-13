@@ -1,3 +1,4 @@
+import string
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -5,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
     CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException, \
-    BaseCollectionDocumentRemoveException
+    BaseCollectionDocumentRemoveException, CollectionLabelException
 from app.repositories.collection_repository import CollectionRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
@@ -27,9 +28,26 @@ class CollectionService:
         return collection
 
     def make_base_collection(self, user: UserDTO):
+        return self.make_collection(user, label=None)
+
+    def make_collection(self, user: UserDTO, label: str | None) -> CollectionDTO:
         collection_repository = CollectionRepository(self.db)
-        new_collection_dto = collection_repository.create_collection(user_uuid=user.uuid, base=True)
-        return new_collection_dto
+        collections = collection_repository.get_collections(user_uuid=user.uuid)
+        collection_label = label
+        if label is None or len(label.strip(string.punctuation)) <= 0:
+            collection_label = f"{user.username}_base"
+        if len(collections) <= 0:
+            collection = collection_repository.create_collection(
+                user_uuid=user.uuid,
+                label=collection_label,
+                base=True
+            )
+            return collection
+        for col in collections:
+            if col.label == label:
+                raise CollectionLabelException(label)
+        collection = collection_repository.create_collection(user.uuid, label=collection_label)
+        return collection
 
     def add_document_to_base_collection(self, user: UserDTO, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)

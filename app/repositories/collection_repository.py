@@ -28,6 +28,7 @@ class CollectionRepository:
             return collection
         return CollectionDTO(
             uuid=collection.uuid,
+            label=collection.label,
             user_create=collection.user_create,
             dt_create=collection.dt_create,
             base=collection.base
@@ -45,6 +46,7 @@ class CollectionRepository:
             collections.append(
                 CollectionDTO(
                     uuid=collection.uuid,
+                    label=collection.label,
                     user_create=collection.user_create,
                     dt_create=collection.dt_create,
                     base=collection.base
@@ -67,31 +69,34 @@ class CollectionRepository:
             return collection
         collection_dto = CollectionDTO(
             uuid=collection.uuid,
+            label=collection.label,
             user_create=collection.user_create,
             dt_create=collection.dt_create,
             base=collection.base
         )
         return collection_dto
 
-    def create_collection(self, user_uuid: UUID, base: bool = False) -> CollectionDTO:
-        if base:
-            new_collection = Collection(
-                uuid=uuid.uuid4(),
-                user_create=user_uuid,
-                dt_create=datetime.now(),
-                base=base
-            )
-        else:
-            new_collection = Collection(
-                uuid=uuid.uuid4(),
-                user_create=user_uuid,
-                dt_create=datetime.now()
-            )
+    def create_collection(
+            self,
+            user_uuid: UUID,
+            label: str,
+            base: bool = False,
+    ) -> CollectionDTO:
+        new_collection = Collection(
+            uuid=uuid.uuid4(),
+            label=label,
+            user_create=user_uuid,
+            dt_create=datetime.now(),
+            base=base
+        )
+
         self.db.add(new_collection)
         self.db.commit()
         self.db.refresh(new_collection)
+
         new_collection_dto = CollectionDTO(
             uuid=new_collection.uuid,
+            label=new_collection.label,
             user_create=new_collection.user_create,
             dt_create=new_collection.dt_create,
             base=new_collection.base

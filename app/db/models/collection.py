@@ -14,6 +14,7 @@ class Collection(Base):
     __tablename__ = "collection"
 
     uuid: Mapped[UUID] = mapped_column(primary_key=True)
+    label: Mapped[str]
     user_create: Mapped[UUID] = mapped_column(ForeignKey("user_account.uuid"), nullable=False)
     dt_create: Mapped[datetime]
     base: Mapped[bool] = mapped_column(default=False)

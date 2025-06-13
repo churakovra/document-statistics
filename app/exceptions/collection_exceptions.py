@@ -31,7 +31,14 @@ class CollectionAlreadyHasDocumentException(Exception):
         self.message = f"Collection {collection_uuid} already has document {document_uuid}"
         self.status_code = HTTPStatus.CONFLICT
 
+
 class BaseCollectionDocumentRemoveException(Exception):
     def __init__(self, collection_uuid: UUID, document_uuid: UUID):
         self.message = f"Can't delete form Base collection {collection_uuid} document {document_uuid}"
+        self.status_code = HTTPStatus.CONFLICT
+
+
+class CollectionLabelException(Exception):
+    def __init__(self, label: str):
+        self.message = f"Can't create a new collection. Collection with label '{label}' already exists"
         self.status_code = HTTPStatus.CONFLICT
