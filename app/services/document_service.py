@@ -1,15 +1,18 @@
 import os
+import string
 from datetime import datetime
 from uuid import UUID
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException
+from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException, \
+    DocumentCollectionsNotFoundException
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document_dto import DocumentDTO
 from app.schemas.document_response import DocumentResponse
 from app.schemas.user_dto import UserDTO
+from app.utils.statistics import Statistics
 
 
 class DocumentService:
@@ -76,7 +79,32 @@ class DocumentService:
     def delete_document(self, document_uuid: UUID):
         document = self._get_document(document_uuid)
 
-        os.remove(document.path)
+        try:
+            os.remove(document.path)
+        except FileNotFoundError:
+            pass
 
         document_repository = DocumentRepository(self.db)
         document_repository.delete_document(document.uuid)
+
+    def get_document_collections(self, document_uuid: UUID) -> list[UUID]:
+        document_repository = DocumentRepository(self.db)
+        collections_uuid = document_repository.get_document_collections(document_uuid)
+        if len(collections_uuid) <= 0:
+            raise DocumentCollectionsNotFoundException(document_uuid)
+        return collections_uuid
+
+    def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, list[dict[str, float]]]:
+        statistics = Statistics()
+        documents = dict[UUID, list[str]]()
+        tf = dict[str, float]()
+        for uuid in documents_uuid:
+            document = self._get_document(uuid)
+            document_words = self.read_document(uuid).lower().split(string.punctuation)
+            documents[document.uuid] = document_words
+
+            if uuid == document_uuid:
+                tf = statistics.get_tf(document_words)
+
+        idf = statistics.get_idf(tf, documents)
+        return idf

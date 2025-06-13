@@ -63,3 +63,10 @@ class DocumentRepository:
         stmt = delete(Document).where(Document.uuid==document_uuid)
         self.db.execute(stmt)
         self.db.commit()
+
+    def get_document_collections(self, document_uuid: UUID) -> list[UUID]:
+        stmt = select(CollectionDocuments.uuid_collection).where(CollectionDocuments.uuid_document==document_uuid)
+        collections = list[UUID]()
+        for document_uuid in self.db.scalars(stmt):
+            collections.append(document_uuid)
+        return collections
