@@ -79,6 +79,14 @@ class DocumentService:
             content = doc.read()
         return content
 
+    def read_documents(self, documents_uuid: list[UUID]) -> dict[UUID, list[str]]:
+        documents = dict[UUID, list[str]]()
+        for uuid in documents_uuid:
+            document = self._get_document(uuid)
+            document_words = [word.strip(string.punctuation).lower() for word in self.read_document(uuid).split()]
+            documents[document.uuid] = document_words
+        return documents
+
     def delete_document(self, document_uuid: UUID):
         document = self._get_document(document_uuid)
 
@@ -99,14 +107,7 @@ class DocumentService:
 
     def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, dict[str, float]]:
         statistics = Statistics()
-        documents = dict[UUID, list[str]]()
-        tf = dict[str, float]()
-        for uuid in documents_uuid:
-            document = self._get_document(uuid)
-            document_words = [word.strip(string.punctuation).lower() for word in self.read_document(uuid).split()]
-            documents[document.uuid] = document_words
-
-            if uuid == document_uuid:
-                tf = statistics.get_tf(document_words)
+        documents = self.read_documents(documents_uuid)
+        tf = statistics.get_tf(documents[document_uuid])
         idf = statistics.get_idf(tf, documents)
         return idf

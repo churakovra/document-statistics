@@ -9,6 +9,7 @@ from app.schemas.collection.collection_dto import CollectionDTO
 from app.schemas.collection.collection_response import CollectionResponse
 from app.schemas.user.user_dto import UserDTO
 from app.services.document_service import DocumentService
+from app.utils.statistics import Statistics
 
 
 class CollectionService:
@@ -63,10 +64,8 @@ class CollectionService:
     def get_collections_with_documents(self, user: UserDTO) -> list[CollectionResponse]:
         collections = self._get_collections(user.uuid)
         documents_uuid = [self.get_collection_documents(collection.uuid) for collection in collections]
-
         document_service = DocumentService(self.db)
         response = list()
-
         for index, collection in enumerate(documents_uuid):
             documents = document_service.get_documents(collection, user.username)
             response.append(
@@ -75,5 +74,16 @@ class CollectionService:
                     documents=documents
                 )
             )
-
         return response
+
+    def get_statistics(self, collection_uuid: UUID) -> dict[str, dict[str, float]]:
+        documents_uuid = self.get_collection_documents(collection_uuid)
+        document_service = DocumentService(self.db)
+        documents = document_service.read_documents(documents_uuid)
+        collection = list[str]()
+        for words in documents.values():
+            collection.extend(words)
+        statistics = Statistics()
+        tf = statistics.get_tf(collection)
+        idf = statistics.get_idf(tf, documents)
+        return idf

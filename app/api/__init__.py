@@ -4,6 +4,7 @@ from .delete_document import router as delete_document_router
 from .delete_user import router as delete_user_router
 from .documents import router as documents_router
 from .get_collection_documents import router as get_collection_router
+from .get_collection_statistics import router as get_collection_statistics_router
 from .get_document_content import router as get_document_content_router
 from .get_document_statistics import router as get_document_statistics_router
 from .login import router as login_router
@@ -22,6 +23,7 @@ api_routers = [
     delete_user_router,
     documents_router,
     get_collection_router,
+    get_collection_statistics_router,
     get_document_content_router,
     get_document_statistics_router,
     login_router,
