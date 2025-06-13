@@ -29,7 +29,7 @@ class DocumentService:
     def get_user_documents(self, user: UserDTO) -> dict[UUID, DocumentResponse]:
         documents = self._get_user_documents(user)
         documents_response = dict[UUID, DocumentResponse]()
-        for uuid, document in documents:
+        for uuid, document in documents.items():
             documents_response[uuid] = DocumentResponse(
                 uuid=document.uuid,
                 user_load=user.username,
@@ -94,17 +94,16 @@ class DocumentService:
             raise DocumentCollectionsNotFoundException(document_uuid)
         return collections_uuid
 
-    def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, list[dict[str, float]]]:
+    def get_statistics(self, document_uuid: UUID, documents_uuid: list[UUID]) -> dict[str, dict[str, float]]:
         statistics = Statistics()
         documents = dict[UUID, list[str]]()
         tf = dict[str, float]()
         for uuid in documents_uuid:
             document = self._get_document(uuid)
-            document_words = self.read_document(uuid).lower().split(string.punctuation)
+            document_words = [word.strip(string.punctuation).lower() for word in self.read_document(uuid).split()]
             documents[document.uuid] = document_words
 
             if uuid == document_uuid:
                 tf = statistics.get_tf(document_words)
-
         idf = statistics.get_idf(tf, documents)
         return idf

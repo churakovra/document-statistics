@@ -3,7 +3,7 @@ from .delete_document import router as delete_document_router
 from .delete_user import router as delete_user_router
 from .documents import router as documents_router
 from .get_document_content import router as get_document_content_router
-from .get_document_statistis import router as get_document_statistics_router
+from .get_document_statistics import router as get_document_statistics_router
 from .login import router as login_router
 from .logout import router as logout_router
 from .metrics import router as metrics_router

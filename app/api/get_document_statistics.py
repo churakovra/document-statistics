@@ -18,9 +18,9 @@ router = APIRouter()
 
 
 @router.get(
-    path="/documents/<document_id>/statistics",
+    path="/documents/{document_id}/statistics",
     tags=[HandlerTypes.DOCUMENT],
-    response_model=dict[str, list[dict[str, float]]],
+    response_model=dict[str, dict[str, float]],
     status_code=HTTPStatus.OK,
     summary="Получение статистики документа",
     description="Получение статистики производится в контексте базовой коллекции. "

@@ -9,33 +9,29 @@ class Statistics:
 
         word_count = 0
         len_words = len(words)
-        tf = dict[str, dict[str, float]]()
+        res = dict[str, dict[str, float]]()
         for search_word in words:
             for word in words:
                 if search_word == word:
                     word_count += 1
-            tf[search_word] = {"tf": word_count / len_words}
+            tf = {"tf": word_count / len_words}
+            if search_word not in res.keys():
+                res[search_word] = tf
             word_count = 0
-
-        return tf
+        return res
 
     def get_idf(
             self,
-            words: dict[str, dict[str, float]],
+            tf: dict[str, dict[str, float]],
             documents: dict[UUID, list[str]]
-    ) -> dict[str, list[dict[str, float]]]:
+    ) -> dict[str, dict[str, float]]:
         document_count = 0
         len_documents = len(documents)
-        res = dict[str, list[dict[str, float]]]()
 
-        for uuid, document_words in documents.items():
-            for word, tf in words.items():
-                if word in document_words:
+        for word, tf_stat in tf.items():
+            for document_word_list in documents.values():
+                if word in document_word_list:
                     document_count += 1
-                idf = float(log(len_documents / document_count + 1))
-                idf_res = {"idf": idf}
-                res[word] = list()
-                res[word].append(tf)
-                res[word].append(idf_res)
-                document_count = 0
-        return res
+            tf[word]["idf"] = log(len_documents / document_count)
+            document_count = 0
+        return tf
