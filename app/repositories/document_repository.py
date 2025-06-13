@@ -13,8 +13,8 @@ from app.db.models.collection import Collection
 from app.db.models.collection_documents import CollectionDocuments
 
 from app.db.models.statistics import Statistics
-from app.schemas.document_dto import DocumentDTO
-from app.schemas.user_dto import UserDTO
+from app.schemas.document.document_dto import DocumentDTO
+from app.schemas.user.user_dto import UserDTO
 
 
 class DocumentRepository:

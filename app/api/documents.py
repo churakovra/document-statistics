@@ -9,8 +9,8 @@ from app.db.database import get_session
 from app.dependencies.auth import get_current_user
 from app.enums.app_enums import HandlerTypes
 from app.exceptions.document_exceptions import DocumentsNotFoundException
-from app.schemas.document_response import DocumentResponse
-from app.schemas.user_dto import UserDTO
+from app.schemas.document.document_response import DocumentResponse
+from app.schemas.user.user_dto import UserDTO
 from app.services.document_service import DocumentService
 
 router = APIRouter()

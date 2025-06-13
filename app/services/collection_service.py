@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException
 from app.repositories.collectoin_repository import CollectionRepository
-from app.schemas.collection_dto import CollectionDTO
-from app.schemas.user_dto import UserDTO
+from app.schemas.collection.collection_dto import CollectionDTO
+from app.schemas.user.user_dto import UserDTO
 
 
 class CollectionService:

@@ -14,7 +14,7 @@ from app.db.models.collection_documents import CollectionDocuments
 
 from app.db.models.statistics import Statistics
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException
-from app.schemas.collection_dto import CollectionDTO
+from app.schemas.collection.collection_dto import CollectionDTO
 
 
 class CollectionRepository:

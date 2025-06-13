@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException, \
     DocumentCollectionsNotFoundException
 from app.repositories.document_repository import DocumentRepository
-from app.schemas.document_dto import DocumentDTO
-from app.schemas.document_response import DocumentResponse
-from app.schemas.user_dto import UserDTO
+from app.schemas.document.document_dto import DocumentDTO
+from app.schemas.document.document_response import DocumentResponse
+from app.schemas.user.user_dto import UserDTO
 from app.utils.statistics import Statistics
 
 
