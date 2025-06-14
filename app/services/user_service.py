@@ -14,27 +14,33 @@ from app.services.auth_service import AuthService
 from app.services.collection_service import CollectionService
 from app.services.document_service import DocumentService
 
-
 class UserService:
     def __init__(self, session: Session):
         self.db = session
 
-    def get_user(self, **credentials) -> UserDTO:
+    def get_user(
+            self,
+            *,
+            username: str = None,
+            uuid: UUID = None,
+            uuid_session: UUID = None
+    ) -> UserDTO:
         user_repo = UserRepository(self.db)
-        if "username" in credentials:  # TODO вынести строки в Enum
-            username = credentials["username"]
+        if username:
             user = user_repo.get_user(username=username)
-        elif "uuid" in credentials:
-            uuid = credentials["uuid"]
+            key = "username"
+            value = username
+        elif uuid:
             user = user_repo.get_user(uuid=uuid)
-        elif "uuid_session" in credentials:
-            uuid_session = credentials["uuid_session"]
+            key = "uuid"
+            value = uuid
+        elif uuid_session:
             user = user_repo.get_user(uuid_session=uuid_session)
+            key = "uuid_session"
+            value = uuid_session
         else:
-            raise ValueError("Требуется указать либо 'username', либо 'uuid'")
+            raise ValueError("Требуется указать либо 'username', либо 'uuid', либо 'uuid_session'")
         if user is None:
-            key = [str(key) for key in credentials.keys()][0]  # Получаем тип креда
-            value = [str(value) for value in credentials.values()][0]  # Получаем значение
             raise UserNotFoundException(key=key, value=value)
         return user
 

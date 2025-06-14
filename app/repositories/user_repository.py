@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID, uuid4
 from datetime import datetime
 
 from sqlalchemy import select, update, delete
@@ -21,15 +21,18 @@ class UserRepository:
     def __init__(self, session: Session):
         self.db = session
 
-    def get_user(self, **credentials) -> UserDTO | None:
-        if "username" in credentials:
-            username = credentials["username"]
+    def get_user(
+            self,
+            *,
+            username: str = None,
+            uuid: UUID = None,
+            uuid_session: UUID = None
+    ) -> UserDTO | None:
+        if username:
             stmt = select(UserAccount).where(UserAccount.username == username)
-        elif "uuid" in credentials:
-            user_uuid = credentials["uuid"]
-            stmt = select(UserAccount).where(UserAccount.uuid == user_uuid)
-        elif "uuid_session" in credentials:
-            uuid_session = credentials["uuid_session"]
+        elif uuid:
+            stmt = select(UserAccount).where(UserAccount.uuid == uuid)
+        elif uuid_session:
             stmt = (
                 select(UserAccount)
                 .join(UserSession, UserAccount.uuid == UserSession.uuid_user)
@@ -50,7 +53,7 @@ class UserRepository:
 
     def add_user(self, user: NewUserAccount):
         user_account = UserAccount(
-            uuid=uuid.uuid4(),
+            uuid=uuid4(),
             username=user.username,
             password_hashed=user.password,
             dt_reg=datetime.now()
@@ -68,7 +71,7 @@ class UserRepository:
         self.db.execute(stmt)
         self.db.commit()
 
-    def delete_user(self, user_uuid: uuid.UUID):
+    def delete_user(self, user_uuid: UUID):
         stmt = delete(UserAccount).where(UserAccount.uuid == user_uuid)
         self.db.execute(stmt)
         self.db.commit()
