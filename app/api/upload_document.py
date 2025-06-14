@@ -39,7 +39,7 @@ async def upload_document(
 
     document_service = DocumentService(session)
     new_doc_uuid = await document_service.upload_document(document, user)
-    new_doc = document_service.get_document(new_doc_uuid, username=user.username)
+    new_doc = document_service.get_document(document_uuid=new_doc_uuid, username=user.username)
 
     collection_service.add_document_to_base_collection(user, new_doc_uuid)
     return DocumentUploadResponse(collection=collection, document=new_doc)

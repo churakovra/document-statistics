@@ -119,7 +119,7 @@ class CollectionRepository:
         collection = self.get_base_collection(user_uuid)
         if collection is None:
             BaseCollectionNotFoundException(user_uuid)
-        return self.add_document_to_collection(document_uuid, collection.uuid)
+        return self.add_document_to_collection(collection_uuid=collection.uuid, document_uuid=document_uuid)
 
     def remove_document(self, document_uuid: UUID):
         stmt = delete(CollectionDocuments).where(CollectionDocuments.uuid_document == document_uuid)

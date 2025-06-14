@@ -9,7 +9,7 @@ from app.dependencies.auth import get_current_user
 from app.dependencies.collection_validate import validate_collection
 from app.dependencies.document_validate import validate_document
 from app.enums.app_enums import HandlerTypes
-from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, BaseCollectionDocumentRemoveException
+from app.exceptions.collection_exceptions import BaseCollectionNotFoundException
 from app.schemas.user.user_dto import UserDTO
 from app.services.collection_service import CollectionService
 
@@ -38,8 +38,6 @@ async def delete_document_collection(
 ):
     try:
         collection_service = CollectionService(session)
-        collection_service.remove_document(collection_uuid=collection_id, document_uuid=document_id, user=user)
+        collection_service.remove_document_from_collection(collection_uuid=collection_id, document_uuid=document_id, user=user)
     except BaseCollectionNotFoundException as bnf:
         raise HTTPException(status_code=bnf.status_code, detail=bnf.message)
-    except BaseCollectionDocumentRemoveException as bcr:
-        raise HTTPException(status_code=bcr.status_code, detail=bcr.message)

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
     CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException, \
-    BaseCollectionDocumentRemoveException, CollectionLabelException
+    CollectionLabelException
 from app.repositories.collection_repository import CollectionRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
@@ -51,26 +51,59 @@ class CollectionService:
 
     def add_document_to_base_collection(self, user: UserDTO, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
-        return collection_repository.add_document_to_base_collection(document_uuid, user.uuid)
+        return collection_repository.add_document_to_base_collection(document_uuid=document_uuid, user_uuid=user.uuid)
 
-    def add_document(self, collection_uuid: UUID, document_uuid: UUID) -> UUID:
+    def move_document(self, collection_uuid: UUID, document_uuid: UUID) -> UUID:
         collection_repository = CollectionRepository(self.db)
-        collection_document = (collection_repository
-                               .get_collection_document(collection_uuid=collection_uuid, document_uuid=document_uuid))
+        collection_document = collection_repository.get_collection_document(
+            collection_uuid=collection_uuid,
+            document_uuid=document_uuid
+        )
         if collection_document is not None:
-            raise CollectionAlreadyHasDocumentException(collection_uuid=collection_uuid, document_uuid=document_uuid)
-        return (collection_repository
-                .add_document_to_collection(collection_uuid=collection_uuid, document_uuid=document_uuid))
+            raise CollectionAlreadyHasDocumentException(
+                collection_uuid=collection_uuid,
+                document_uuid=document_uuid
+            )
+        return collection_repository.add_document_to_collection(
+            collection_uuid=collection_uuid,
+            document_uuid=document_uuid
+        )
 
-    def remove_document(self, collection_uuid: UUID, document_uuid: UUID, user: UserDTO):
+    def remove_document_from_collection(self, collection_uuid: UUID, document_uuid: UUID, user: UserDTO):
         collection_repository = CollectionRepository(self.db)
         collection = self._get_collection(collection_uuid)
         if not collection.base:
-            (collection_repository.
-             remove_document_from_collection(collection_uuid=collection_uuid, document_uuid=document_uuid))
+            collection_repository.remove_document_from_collection(
+                collection_uuid=collection_uuid,
+                document_uuid=document_uuid
+            )
             self.add_document_to_base_collection(document_uuid=document_uuid, user=user)
         else:
-            raise BaseCollectionDocumentRemoveException(collection_uuid=collection_uuid, document_uuid=document_uuid)
+            collection_repository.remove_document_from_collection(
+                collection_uuid=collection.uuid,
+                document_uuid=document_uuid
+            )
+
+    def remove_document_from_all_collections(self, document_uuid: UUID, user: UserDTO):
+        collections = self._get_collections(user.uuid)
+        base_collection_uuid = None
+        for collection in collections:
+            if not collection.base:
+                self.remove_document_from_collection(
+                    collection_uuid=collection.uuid,
+                    document_uuid=document_uuid,
+                    user=user
+                )
+            else:
+                base_collection_uuid = collection.uuid
+        if base_collection_uuid:
+            self.remove_document_from_collection(
+                collection_uuid=base_collection_uuid,
+                document_uuid=document_uuid,
+                user=user
+            )
+        else:
+            raise BaseCollectionNotFoundException(user.uuid)
 
     def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
         collection_repository = CollectionRepository(self.db)
