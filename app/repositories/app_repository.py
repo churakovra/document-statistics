@@ -2,7 +2,7 @@ import uuid
 from uuid import UUID
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import text, update, select, and_
+from sqlalchemy import text, update, select, and_, delete
 from sqlalchemy.orm import Session
 
 from app.config.preferences import SESSION_ALIVE_HOURS
@@ -87,5 +87,10 @@ class AppRepository:
             )
             .values(alive=False)
         )
+        self.db.execute(stmt)
+        self.db.commit()
+
+    def delete_user_sessions(self, user_uuid: UUID):
+        stmt = delete(UserSession).where(UserSession.uuid_user == user_uuid)
         self.db.execute(stmt)
         self.db.commit()

@@ -23,7 +23,7 @@ class DocumentService:
 
     def _get_user_documents(self, user: UserDTO) -> dict[UUID, DocumentDTO]:
         document_repository = DocumentRepository(self.db)
-        documents = document_repository.get_user_documents(user)
+        documents = document_repository.get_user_documents(user.uuid)
         if len(documents) <= 0:
             raise DocumentsNotFoundException(user.username)
         return documents
@@ -91,14 +91,20 @@ class DocumentService:
 
     def delete_document(self, document_uuid: UUID):
         document = self._get_document(document_uuid)
-
         try:
             os.remove(document.path)
         except FileNotFoundError:
             pass
-
         document_repository = DocumentRepository(self.db)
         document_repository.delete_document(document.uuid)
+
+    def delete_user_documents(self, user: UserDTO):
+        try:
+            documents_uuid = self._get_user_documents(user)
+            for uuid in documents_uuid:
+                self.delete_document(uuid)
+        except DocumentsNotFoundException:
+            pass
 
     def get_document_collections(self, document_uuid: UUID) -> list[UUID]:
         document_repository = DocumentRepository(self.db)

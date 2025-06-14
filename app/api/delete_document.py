@@ -36,7 +36,7 @@ async def delete_document(
     document_service = DocumentService(session)
     collection_service = CollectionService(session)
     try:
-        collection_service.remove_document_from_all_collections(document_uuid=document_id, user=user)
+        collection_service.remove_document_from_all_collections(document_uuid=document_id)
         document_service.delete_document(document_id)
         return {"message": "Операция успешно выполнена"}
     except DocumentNotFoundException as dnf:

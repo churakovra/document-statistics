@@ -1,14 +1,19 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.orm import Session
 
 from app.db.models.user_account import UserAccount
 from app.db.models.user_session import UserSession
 
-from app.schemas.user.new_user import NewUserAccount
+from app.db.models.document import Document
+from app.db.models.collection import Collection
+from app.db.models.collection_documents import CollectionDocuments
 
+from app.db.models.statistics import Statistics
+
+from app.schemas.user.new_user import NewUserAccount
 from app.schemas.user.user_dto import UserDTO
 
 
@@ -28,7 +33,7 @@ class UserRepository:
             stmt = (
                 select(UserAccount)
                 .join(UserSession, UserAccount.uuid == UserSession.uuid_user)
-                .where(UserSession.uuid_session==uuid_session)
+                .where(UserSession.uuid_session == uuid_session)
             )
         else:
             raise ValueError("Требуется указать либо 'username', либо 'uuid'")
@@ -63,7 +68,7 @@ class UserRepository:
         self.db.execute(stmt)
         self.db.commit()
 
-    def delete_user(self, user: UserDTO):
-        # Make & add DeletedUser
-        # Remove UserAccount
-        pass
+    def delete_user(self, user_uuid: uuid.UUID):
+        stmt = delete(UserAccount).where(UserAccount.uuid == user_uuid)
+        self.db.execute(stmt)
+        self.db.commit()

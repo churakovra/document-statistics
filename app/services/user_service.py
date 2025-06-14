@@ -14,6 +14,8 @@ from app.schemas.user.user_dto import UserDTO
 from app.schemas.user.user_login import UserLogin
 from app.services.app_service import AppService
 from app.services.auth_service import AuthService
+from app.services.collection_service import CollectionService
+from app.services.document_service import DocumentService
 
 
 class UserService:
@@ -83,15 +85,17 @@ class UserService:
         user.password_hashed = password_hashed_new
         user_repository.set_new_pass(user)
 
-    def delete_user(self, user_uuid: UUID):
-        user = self.get_user(uuid=user_uuid)
+    def delete_user(self, user: UserDTO):
         # Убиваем все сессии пользователя
         app_service = AppService(self.db)
-        app_service.deactivate_user_sessions(user.uuid)
+        app_service.delete_user_sessions(user.uuid)
 
-        # Удаляем файлы
-        # TODO
+        # Удаляем коллекции и документы пользователя
+        collection_service = CollectionService(self.db)
+        document_service = DocumentService(self.db)
+        collection_service.delete_user_collections(user.uuid)
+        document_service.delete_user_documents(user)
 
         # Удаляем профиль пользователя
         user_repository = UserRepository(self.db)
-        user_repository.delete_user(user)
+        user_repository.delete_user(user.uuid)

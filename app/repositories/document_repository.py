@@ -21,14 +21,14 @@ class DocumentRepository:
     def __init__(self, session: Session):
         self.db = session
 
-    def get_user_documents(self, user: UserDTO) -> dict[UUID, DocumentDTO]:
-        stmt = select(Document).where(Document.user_load == user.uuid)
+    def get_user_documents(self, user_uuid: UUID) -> dict[UUID, DocumentDTO]:
+        stmt = select(Document).where(Document.user_load == user_uuid)
         documents = dict[UUID, DocumentDTO]()
         for document in self.db.scalars(stmt):
             document_dto = DocumentDTO(
                 uuid=document.uuid,
                 path=document.path,
-                user_load=user.uuid,
+                user_load=user_uuid,
                 dt_load=document.dt_load
             )
             documents[document_dto.uuid] = document_dto
@@ -65,7 +65,7 @@ class DocumentRepository:
         self.db.commit()
 
     def get_document_collections(self, document_uuid: UUID) -> list[UUID]:
-        stmt = select(CollectionDocuments.uuid_collection).where(CollectionDocuments.uuid_document==document_uuid)
+        stmt = select(CollectionDocuments.uuid_collection).where(CollectionDocuments.uuid_document == document_uuid)
         collections = list[UUID]()
         for document_uuid in self.db.scalars(stmt):
             collections.append(document_uuid)

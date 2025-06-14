@@ -39,6 +39,10 @@ class AppService:
         app_repository = AppRepository(self.db)
         app_repository.deactivate_user_sessions(user_uuid)
 
+    def delete_user_sessions(self, user_uuid: UUID):
+        app_repository = AppRepository(self.db)
+        app_repository.delete_user_sessions(user_uuid)
+
     @staticmethod
     def get_version() -> str:
         version = __version__

@@ -84,26 +84,9 @@ class CollectionService:
                 document_uuid=document_uuid
             )
 
-    def remove_document_from_all_collections(self, document_uuid: UUID, user: UserDTO):
-        collections = self._get_collections(user.uuid)
-        base_collection_uuid = None
-        for collection in collections:
-            if not collection.base:
-                self.remove_document_from_collection(
-                    collection_uuid=collection.uuid,
-                    document_uuid=document_uuid,
-                    user=user
-                )
-            else:
-                base_collection_uuid = collection.uuid
-        if base_collection_uuid:
-            self.remove_document_from_collection(
-                collection_uuid=base_collection_uuid,
-                document_uuid=document_uuid,
-                user=user
-            )
-        else:
-            raise BaseCollectionNotFoundException(user.uuid)
+    def remove_document_from_all_collections(self, document_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collection_repository.remove_document(document_uuid)
 
     def get_collection_documents(self, collection_uuid: UUID) -> list[UUID]:
         collection_repository = CollectionRepository(self.db)
@@ -169,3 +152,18 @@ class CollectionService:
             )
 
         return idf
+
+    def delete_user_collections(self, user_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collections = collection_repository.get_collections(user_uuid)
+        for collection in collections:
+            self.clear_collection(collection.uuid)
+            self.delete_collection(collection.uuid)
+
+    def clear_collection(self, collection_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collection_repository.remove_documents_from_collection(collection_uuid)
+
+    def delete_collection(self, collection_uuid: UUID):
+        collection_repository = CollectionRepository(self.db)
+        collection_repository.delete_collection(collection_uuid)
