@@ -38,7 +38,6 @@ async def logout(
     try:
         app_service.deactivate_session(cs)
         response.delete_cookie(sck.SESSION)
-        response.delete_cookie(sck.DT_EXP)
         return UserAccountResponse(message="Сессия успешно завершена", status_code=HTTPStatus.OK)
     except SessionNotFoundException as snf:
         raise HTTPException(status_code=snf.status_code, detail=snf.message)
