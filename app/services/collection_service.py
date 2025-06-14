@@ -1,5 +1,6 @@
 import string
 from uuid import UUID
+from wsgiref.util import request_uri
 
 from sqlalchemy.orm import Session
 
@@ -128,7 +129,7 @@ class CollectionService:
         statistics_service = StatisticsService()
         statistics_repository = StatisticsRepository(self.db)
         if recount:
-            statistics_repository.delete_statistics(collection_uuid)
+            statistics_repository.delete_user_statistics(collection_uuid)
         if not recount:
             statistics = statistics_repository.get_statistics(collection_uuid)
             if len(statistics) > 0:
@@ -156,12 +157,15 @@ class CollectionService:
 
         return statistics
 
-    def delete_user_collections(self, user_uuid: UUID):
+    def delete_user_collections(self, user_uuid: UUID) -> list[UUID]:
         collection_repository = CollectionRepository(self.db)
         collections = collection_repository.get_collections(user_uuid)
+        deleted_uuids = []
         for collection in collections:
             self.clear_collection(collection.uuid)
             self.delete_collection(collection.uuid)
+            deleted_uuids.append(collection.uuid)
+        return deleted_uuids
 
     def clear_collection(self, collection_uuid: UUID):
         collection_repository = CollectionRepository(self.db)

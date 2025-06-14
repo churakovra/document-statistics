@@ -33,7 +33,7 @@ class StatisticsRepository:
         self.db.commit()
         self.db.refresh(statistics)
 
-    def delete_statistics(self, source_uuid: UUID):
+    def delete_user_statistics(self, source_uuid: UUID):
         stmt = delete(Statistics).where(Statistics.source_uuid==source_uuid)
         self.db.execute(stmt)
         self.db.commit()

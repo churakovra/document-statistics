@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.exceptions.session_exceptions import SessionIsNoneException, SessionIsOldException
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException, UserAlreadyExistsException
+from app.repositories.statistics_repository import StatisticsRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.cookie_session import CookieSession
 from app.schemas.user.new_user import NewUserAccount
@@ -90,11 +91,17 @@ class UserService:
         app_service = AppService(self.db)
         app_service.delete_user_sessions(user.uuid)
 
-        # Удаляем коллекции и документы пользователя
+        # Удаляем коллекции, документы и статистику пользователя
         collection_service = CollectionService(self.db)
         document_service = DocumentService(self.db)
-        collection_service.delete_user_collections(user.uuid)
-        document_service.delete_user_documents(user)
+        statistics_repository = StatisticsRepository(self.db)
+
+        deleted_collections_uuid = collection_service.delete_user_collections(user.uuid)
+        deleted_documents_uuid = document_service.delete_user_documents(user)
+        for uuid in deleted_collections_uuid:
+            statistics_repository.delete_user_statistics(uuid)
+        for uuid in deleted_documents_uuid:
+            statistics_repository.delete_user_statistics(uuid)
 
         # Удаляем профиль пользователя
         user_repository = UserRepository(self.db)

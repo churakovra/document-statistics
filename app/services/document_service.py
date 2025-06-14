@@ -98,13 +98,16 @@ class DocumentService:
         document_repository = DocumentRepository(self.db)
         document_repository.delete_document(document.uuid)
 
-    def delete_user_documents(self, user: UserDTO):
+    def delete_user_documents(self, user: UserDTO) -> list[UUID]:
+        deleted_uuids = []
         try:
-            documents_uuid = self._get_user_documents(user)
-            for uuid in documents_uuid:
+            documents = self._get_user_documents(user)
+            for uuid in documents:
                 self.delete_document(uuid)
+                deleted_uuids.append(uuid)
         except DocumentsNotFoundException:
             pass
+        return deleted_uuids
 
     def get_document_collections(self, document_uuid: UUID) -> list[UUID]:
         document_repository = DocumentRepository(self.db)
