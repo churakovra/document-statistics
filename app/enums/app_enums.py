@@ -15,6 +15,7 @@ class HandlerTypes(str, Enum):
     USERS = "users"
     DOCUMENTS = "documents"
     COLLECTIONS = "collections"
+    APP = "APP"
 
 class StatisticsTypes(str, Enum):
     DOCUMENT = 1

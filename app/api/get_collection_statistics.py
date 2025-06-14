@@ -22,7 +22,14 @@ router = APIRouter()
     path="/collections/{collection_id}/statistics",
     tags=[HandlerTypes.COLLECTIONS],
     status_code=HTTPStatus.OK,
-    response_model=StatisticsResponse
+    response_model=StatisticsResponse,
+    summary="Получить статистику коллекции",
+    description="Получить статистику коллекции. Если данные о статистике есть в БД, возвращаются эти данные без пересчета",
+    responses={
+        HTTPStatus.OK: {"description": "Операция выполнена успешно"},
+        HTTPStatus.NOT_FOUND: {"description": "Коллекция пустая / документ не найден. "
+                                              "Читать в теле ошибки"},
+    }
 )
 async def get_collection_statistics(
         collection_id: UUID = Depends(validate_collection),

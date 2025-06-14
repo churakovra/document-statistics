@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/register",
+    path="/register",
     tags=[ht.USERS],
     response_model=UserAccountResponse,
     status_code=HTTPStatus.CREATED,
