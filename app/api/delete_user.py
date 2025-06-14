@@ -33,5 +33,4 @@ async def delete_user(
     user_service = UserService(session)
     user_service.delete_user(user)
     response.delete_cookie(key=sck.SESSION)
-    response.delete_cookie(key=sck.DT_EXP)
     return {"message": "Операция выполнена успешно"}

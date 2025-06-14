@@ -9,6 +9,7 @@ from app.enums.app_enums import SessionCookieKey as sck, HandlerTypes
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException
 from app.schemas.user.user_account_response import UserAccountResponse
 from app.schemas.user.user_login import UserLogin
+from app.services.app_service import AppService
 from app.services.user_service import UserService
 
 router = APIRouter()
@@ -32,11 +33,12 @@ async def login(
         response: Response,
         session: Session = Depends(get_session),
 ):
-    user_service = UserService(session)
     try:
-        user_session = user_service.auth(user_creds)
-        response.set_cookie(key=sck.SESSION.value, value=user_session.user_session)
-        response.set_cookie(key=sck.DT_EXP.value, value=str(user_session.dt_exp))
+        user_service = UserService(session)
+        user = user_service.get_user(username=user_creds.username)
+        app_service = AppService(session)
+        user_session = app_service.auth(user, user_creds)
+        response.set_cookie(key=sck.SESSION.value, value=str(user_session.session_uuid))
         return UserAccountResponse(message="Success", status_code=HTTPStatus.OK)
     except UserNotFoundException as nf:
         raise HTTPException(status_code=nf.status_code, detail=nf.message)

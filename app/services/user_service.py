@@ -1,65 +1,48 @@
-from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.exceptions.session_exceptions import SessionIsNoneException, SessionIsOldException
 from app.exceptions.user_exceptions import UserNotFoundException, UserWrongPasswordException, UserAlreadyExistsException
 from app.repositories.statistics_repository import StatisticsRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.cookie_session import CookieSession
 from app.schemas.user.new_user import NewUserAccount
 from app.schemas.user.user_account_response import UserCreds
 from app.schemas.user.user_change_password import UserChangePassword
 from app.schemas.user.user_dto import UserDTO
-from app.schemas.user.user_login import UserLogin
 from app.services.app_service import AppService
 from app.services.auth_service import AuthService
 from app.services.collection_service import CollectionService
 from app.services.document_service import DocumentService
 
-
 class UserService:
     def __init__(self, session: Session):
         self.db = session
 
-    def get_user(self, **credentials) -> UserDTO:
+    def get_user(
+            self,
+            *,
+            username: str = None,
+            uuid: UUID = None,
+            uuid_session: UUID = None
+    ) -> UserDTO:
         user_repo = UserRepository(self.db)
-        if "username" in credentials:  # TODO вынести строки в Enum
-            username = credentials["username"]
+        if username:
             user = user_repo.get_user(username=username)
-        elif "uuid" in credentials:
-            uuid = credentials["uuid"]
+            key = "username"
+            value = username
+        elif uuid:
             user = user_repo.get_user(uuid=uuid)
-        elif "uuid_session" in credentials:
-            uuid_session = credentials["uuid_session"]
+            key = "uuid"
+            value = uuid
+        elif uuid_session:
             user = user_repo.get_user(uuid_session=uuid_session)
+            key = "uuid_session"
+            value = uuid_session
         else:
-            raise ValueError("Требуется указать либо 'username', либо 'uuid'")
+            raise ValueError("Требуется указать либо 'username', либо 'uuid', либо 'uuid_session'")
         if user is None:
-            key = [str(key) for key in credentials.keys()][0]  # Получаем тип креда
-            value = [str(value) for value in credentials.values()][0]  # Получаем значение
             raise UserNotFoundException(key=key, value=value)
         return user
-
-    def auth(self, user_creds: UserLogin) -> CookieSession:
-        user = self.get_user(username=user_creds.username)
-        if not AuthService.validate_pass(user_creds.password, user.password_hashed):
-            raise UserWrongPasswordException()
-        app_service = AppService(self.db)
-        user_session = app_service.create_session(user.uuid)
-        return user_session
-
-    def validate_session(self, cs: CookieSession):
-        if cs.user_session is None:
-            raise SessionIsNoneException()
-        elif cs.dt_exp <= datetime.now(timezone.utc).astimezone():
-            raise SessionIsOldException(cs.user_session)
-
-    def refresh_session(self, cs: CookieSession) -> CookieSession:
-        app_service = AppService(self.db)
-        new_session = app_service.refresh_session(cs)
-        return new_session
 
     def register_user(self, user_creds: NewUserAccount):
         user_repo = UserRepository(self.db)

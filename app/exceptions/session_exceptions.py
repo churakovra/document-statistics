@@ -18,3 +18,9 @@ class SessionIsOldException(Exception):
     def __init__(self, session_uuid: UUID | str):
         self.message = f"Session {session_uuid} is old"
         self.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+class SessionDeadException(Exception):
+    def __init__(self, session_uuid: UUID | str):
+        self.message = f"Session {session_uuid} is not alive"
+        self.status_code = HTTPStatus.UNAUTHORIZED

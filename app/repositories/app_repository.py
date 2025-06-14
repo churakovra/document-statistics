@@ -2,7 +2,7 @@ import uuid
 from uuid import UUID
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import text, update, select, and_, delete
+from sqlalchemy import text, update, select, and_, delete, desc
 from sqlalchemy.orm import Session
 
 from app.config.preferences import SESSION_ALIVE_HOURS
@@ -43,13 +43,25 @@ class AppRepository:
         self.db.commit()
         self.db.refresh(user_session)
         user_session_reply = CookieSession(
-            user_session=user_session.uuid_session,
-            dt_exp=user_session.dt_exp
+            session_uuid=user_session.uuid_session
         )
         return user_session_reply
 
-    def get_session(self, us: UUID) -> UserSessionDTO | None:
-        stmt = select(UserSession).where(UserSession.uuid_session == us)
+    def get_session(self, *, session_uuid: UUID | None = None, user_uuid: UUID | None = None) -> UserSessionDTO | None:
+        if session_uuid:
+            stmt = (
+                select(UserSession)
+                .where(UserSession.uuid_session == session_uuid)
+                .order_by(desc(UserSession.dt_exp))
+            )
+        elif user_uuid:
+            stmt = (
+                select(UserSession)
+                .where(UserSession.uuid_user == user_uuid)
+                .order_by(desc(UserSession.dt_exp))
+            )
+        else:
+            raise ValueError("Нужно передать или session_uuid или user_uuid")
         user_session = self.db.scalar(stmt)
         if user_session is None:
             return user_session
@@ -62,14 +74,14 @@ class AppRepository:
         return session_dto
 
     def deactivate_session(self, cs: CookieSession):
-        session = self.get_session(cs.user_session)
+        session = self.get_session(session_uuid=cs.session_uuid)
         if session is None:
-            raise SessionNotFoundException(cs.user_session)
+            raise SessionNotFoundException(cs.session_uuid)
         if not session.alive:
             return session
         stmt = (
             update(UserSession)
-            .where(UserSession.uuid_session == cs.user_session)
+            .where(UserSession.uuid_session == cs.session_uuid)
             .values(alive=False)
         )
         self.db.execute(stmt)
