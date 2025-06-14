@@ -15,3 +15,10 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 # backend
 BACK_SERVICE_NAME = getenv("BACK_SERVICE_NAME")
 BACKEND_PORT = getenv("BACKEND_PORT")
+
+# session
+SESSION_ALIVE_HOURS = 8
+
+# app
+DT_STR_FORMAT = "%d.%m.%Y %H:%M:%S"
+STATISTICS_LENGTH = 50
