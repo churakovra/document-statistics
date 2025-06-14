@@ -24,9 +24,7 @@ router = APIRouter()
     response_model=StatisticsResponse,
     status_code=HTTPStatus.OK,
     summary="Получение статистики документа",
-    description="Получение статистики производится в контексте базовой коллекции. "
-                "Если нужна статистика по документу из другой коллекции, нужно воспользоваться "
-                "/documents/<document_id>/<collection_id>/statistics",
+    description="Получение статистики производится в контексте базовой коллекции",
     responses={
         HTTPStatus.OK: {"description": "Статистика получена"},
         HTTPStatus.NOT_FOUND: {

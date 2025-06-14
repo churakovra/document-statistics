@@ -124,13 +124,16 @@ class CollectionService:
             )
         return response
 
-    def get_statistics(self, collection_uuid: UUID) -> dict[str, dict[str, float]]:
+    def get_statistics(self, collection_uuid: UUID, recount: bool = False) -> dict[str, dict[str, float]]:
         statistics_service = StatisticsService()
         statistics_repository = StatisticsRepository(self.db)
-        statistics = statistics_repository.get_statistics(collection_uuid)
-        if len(statistics) > 0:
-            response = statistics_service.get_statistics_response(statistics)
-            return response
+        if recount:
+            statistics_repository.delete_statistics(collection_uuid)
+        if not recount:
+            statistics = statistics_repository.get_statistics(collection_uuid)
+            if len(statistics) > 0:
+                response = statistics_service.get_statistics_response(statistics)
+                return response
 
         documents_uuid = self.get_collection_documents(collection_uuid)
         document_service = DocumentService(self.db)
@@ -138,11 +141,11 @@ class CollectionService:
         collection = list[str]()
         for words in documents.values():
             collection.extend(words)
-        tf = statistics_service.get_tf(collection)
-        idf = statistics_service.get_idf(tf, documents)
-        idf = statistics_service.sort_statistics(idf)
 
-        for word, stat in idf.items():
+        statistics = statistics_service.get_statistics(collection, documents)
+        statistics = statistics_service.sort_statistics(statistics)
+
+        for word, stat in statistics.items():
             statistics_repository.add_statistics(
                 stat_type=StatisticsTypes.COLLECTION.value,  # Статистика коллекции
                 source_uuid=collection_uuid,
@@ -151,7 +154,7 @@ class CollectionService:
                 idf=stat["idf"]
             )
 
-        return idf
+        return statistics
 
     def delete_user_collections(self, user_uuid: UUID):
         collection_repository = CollectionRepository(self.db)

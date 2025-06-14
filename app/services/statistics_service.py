@@ -6,6 +6,16 @@ from app.schemas.statistics.statistics_dto import StatisticsDTO
 
 
 class StatisticsService:
+    def get_statistics(self, words: list[str], documents: dict[UUID, list[str]]) -> dict[str, dict[str, float]]:
+        tf = self.get_tf(words)
+        idf = self.get_idf(words, documents)
+        res = dict[str, dict[str, float]]()
+        for word, statistics in tf.items():
+            if word not in res.keys():
+                res[word] = tf[word]
+            res[word]["idf"] = idf[word]["idf"]
+        return res
+
     def get_tf(self, words: list[str]) -> dict[str, dict[str, float]]:
         if len(words) <= 0:
             raise ValueError("В строке должно быть хотя бы 1 слово")
@@ -25,19 +35,22 @@ class StatisticsService:
 
     def get_idf(
             self,
-            tf: dict[str, dict[str, float]],
+            words: list[str],
             documents: dict[UUID, list[str]]
     ) -> dict[str, dict[str, float]]:
         document_count = 0
         len_documents = len(documents)
+        res = dict[str, dict[str, float]]()
 
-        for word, tf_stat in tf.items():
+        for word in words:
             for document_word_list in documents.values():
                 if word in document_word_list:
                     document_count += 1
-            tf[word]["idf"] = log(len_documents / document_count)
+            idf = {"idf": log(len_documents / document_count)}
+            if word not in res.keys():
+                res[word] = idf
             document_count = 0
-        return tf
+        return res
 
     def sort_statistics(self, statistics: dict[str, dict[str, float]]) -> dict[str, dict[str, float]]:
         response = dict()

@@ -122,11 +122,10 @@ class DocumentService:
             return response
 
         documents = self.read_documents(documents_uuid)
-        tf = statistics_service.get_tf(documents[document_uuid])
-        idf = statistics_service.get_idf(tf, documents)
-        idf = statistics_service.sort_statistics(idf)
+        statistics = statistics_service.get_statistics(documents[document_uuid], documents)
+        statistics = statistics_service.sort_statistics(statistics)
 
-        for word, stat in idf.items():
+        for word, stat in statistics.items():
             statistics_repository.add_statistics(
                 stat_type=StatisticsTypes.COLLECTION.value,  # Статистика документа в коллекции
                 source_uuid=document_uuid,
@@ -135,4 +134,4 @@ class DocumentService:
                 idf=stat["idf"]
             )
 
-        return idf
+        return statistics

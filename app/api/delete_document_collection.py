@@ -38,6 +38,11 @@ async def delete_document_collection(
 ):
     try:
         collection_service = CollectionService(session)
-        collection_service.remove_document_from_collection(collection_uuid=collection_id, document_uuid=document_id, user=user)
+        collection_service.remove_document_from_collection(
+            collection_uuid=collection_id,
+            document_uuid=document_id,
+            user=user
+        )
+        collection_service.get_statistics(collection_id, recount=True)
     except BaseCollectionNotFoundException as bnf:
         raise HTTPException(status_code=bnf.status_code, detail=bnf.message)

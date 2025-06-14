@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
 from app.db.models.statistics import Statistics
@@ -32,3 +32,9 @@ class StatisticsRepository:
         self.db.add(statistics)
         self.db.commit()
         self.db.refresh(statistics)
+
+    def delete_statistics(self, source_uuid: UUID):
+        stmt = delete(Statistics).where(Statistics.source_uuid==source_uuid)
+        self.db.execute(stmt)
+        self.db.commit()
+

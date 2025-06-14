@@ -37,6 +37,7 @@ async def add_collection_document(
     try:
         collection_service = CollectionService(session)
         collection_service.move_document(collection_uuid=collection_id, document_uuid=document_id)
+        collection_service.get_statistics(collection_uuid=collection_id, recount=True)
         return {"message": "Операция успешно выполнена"}
     except CollectionAlreadyHasDocumentException as hd:
         raise HTTPException(status_code=hd.status_code, detail=hd.message)
