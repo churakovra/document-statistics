@@ -138,3 +138,7 @@ class DocumentService:
             )
 
         return statistics
+
+    def read_document_huffman(self, document_uuid: UUID):
+        pass
+
