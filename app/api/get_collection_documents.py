@@ -27,8 +27,10 @@ router = APIRouter()
     description="Получение списка документов конкретной коллекции",
     responses={
         HTTPStatus.OK: {"description": "Операция выполнена успешно"},
-        HTTPStatus.NOT_FOUND: {"description": "Коллекция не найдена / в коллекции нет документов"
-                                              "Читать в теле ошибки"},
+        HTTPStatus.NOT_FOUND: {
+            "description": "Коллекция не найдена / в коллекции нет документов"
+                           "Читать в теле ошибки"
+        },
     }
 )
 async def get_collection_documents(

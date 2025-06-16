@@ -23,7 +23,7 @@ router = APIRouter()
     description="Получение всех коллекций и документов в коллекциях авторизованного пользователя",
     responses={
         HTTPStatus.OK: {"description": "Операция выполнена успешно"},
-        HTTPStatus.NOT_FOUND: {"description": "Коллекции не найдены/В коллекциях нет документов."
+        HTTPStatus.NOT_FOUND: {"description": "Коллекции не найдены / В коллекциях нет документов. "
                                               "Подробнее в теле ошибки"},
     }
 )

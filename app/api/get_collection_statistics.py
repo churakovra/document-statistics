@@ -27,8 +27,10 @@ router = APIRouter()
     description="Получить статистику коллекции. Если данные о статистике есть в БД, возвращаются эти данные без пересчета",
     responses={
         HTTPStatus.OK: {"description": "Операция выполнена успешно"},
-        HTTPStatus.NOT_FOUND: {"description": "Коллекция пустая / документ не найден. "
-                                              "Читать в теле ошибки"},
+        HTTPStatus.NOT_FOUND: {"description": "Коллекция пустая / документ не найден. Читать в теле ошибки"},
+        HTTPStatus.CONFLICT: {
+            "description": "Документ для расчета TF не может быть пустым"
+        }
     }
 )
 async def get_collection_statistics(
@@ -43,3 +45,5 @@ async def get_collection_statistics(
         raise HTTPException(status_code=ce.status_code, detail=ce.message)
     except DocumentNotFoundException as dnf:
         raise HTTPException(status_code=dnf.status_code, detail=dnf.message)
+    except ValueError:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="The collection documents should not be empty")
