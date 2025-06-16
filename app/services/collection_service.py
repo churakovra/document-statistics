@@ -1,6 +1,5 @@
 import string
 from uuid import UUID
-from wsgiref.util import request_uri
 
 from sqlalchemy.orm import Session
 
@@ -8,6 +7,7 @@ from app.enums.app_enums import StatisticsTypes
 from app.exceptions.collection_exceptions import BaseCollectionNotFoundException, CollectionEmptyException, \
     CollectionsNotFoundException, CollectionNotFoundException, CollectionAlreadyHasDocumentException, \
     CollectionLabelException
+from app.exceptions.document_exceptions import DocumentIsEmptyException
 from app.repositories.collection_repository import CollectionRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.collection.collection_dto import CollectionDTO
@@ -142,8 +142,10 @@ class CollectionService:
         collection = list[str]()
         for words in documents.values():
             collection.extend(words)
-
-        statistics = statistics_service.get_statistics(collection, documents)
+        try:
+            statistics = statistics_service.get_statistics(collection, documents)
+        except ValueError:
+            raise DocumentIsEmptyException(collection_uuid)
         statistics = statistics_service.sort_statistics(statistics)
 
         for word, stat in statistics.items():

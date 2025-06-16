@@ -9,6 +9,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - ds-pg:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER" ]
       interval: 5s

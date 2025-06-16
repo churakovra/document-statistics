@@ -9,6 +9,7 @@ from .documents import router as documents_router
 from .get_collection_documents import router as get_collection_router
 from .get_collection_statistics import router as get_collection_statistics_router
 from .get_document_content import router as get_document_content_router
+from .get_document_content_huffman import router as get_document_content_huffman_router
 from .get_document_statistics import router as get_document_statistics_router
 from .login import router as login_router
 from .logout import router as logout_router
@@ -31,6 +32,7 @@ api_routers = [
     get_collection_router,
     get_collection_statistics_router,
     get_document_content_router,
+    get_document_content_huffman_router,
     get_document_statistics_router,
     login_router,
     logout_router,
