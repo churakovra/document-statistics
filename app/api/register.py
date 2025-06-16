@@ -20,7 +20,7 @@ router = APIRouter()
     response_model=UserAccountResponse,
     status_code=HTTPStatus.CREATED,
     summary="Регистрация нового пользователя",
-    description="Создаёт нового пользователя в системе. В случае, если пользователь уже существует, возвращает ошибку.",
+    description="Создаёт нового пользователя в системе. В случае, если пользователь уже существует, возвращает ошибку",
     responses={
         HTTPStatus.CREATED: {"description": "Пользователь успешно зарегистрирован"},
         HTTPStatus.CONFLICT: {"description": "Пользователь с таким email уже существует"},

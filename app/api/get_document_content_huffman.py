@@ -11,9 +11,9 @@ from app.dependencies.document_validate import validate_document
 from app.enums.app_enums import HandlerTypes
 from app.schemas.user.user_dto import UserDTO
 from app.services.document_service import DocumentService
-from app.services.statistics_service import StatisticsService
 
 router = APIRouter()
+
 
 @router.get(
     path="/documents/{document_id}/huffman",

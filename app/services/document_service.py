@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException, \
-    DocumentCollectionsNotFoundException
+    DocumentCollectionsNotFoundException, DocumentIsEmptyException, DocumentWrongTypeException
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.document.document_dto import DocumentDTO
@@ -64,10 +64,15 @@ class DocumentService:
         document_repository = DocumentRepository(self.db)
         return document_repository.add_document(file_path, user)
 
+    def validate_document(self, file_name: str):
+        file_type = file_name.split(".")[1]
+        if not file_name.split(".")[1] == "txt":
+            raise DocumentWrongTypeException(file_type)
+
     async def write_document(self, document: UploadFile, username: str) -> str:
         content_bytes = await document.read()
         if not content_bytes:
-            raise ValueError("Файл пустой")
+            raise DocumentIsEmptyException(None)
         upload_dir = "/app/storage/"
         os.makedirs(upload_dir, exist_ok=True)
         file_path = os.path.join(upload_dir, f"{username}_{datetime.now().timestamp()}_{document.filename}")
@@ -125,7 +130,10 @@ class DocumentService:
             return response
 
         documents = self.read_documents(documents_uuid)
-        statistics = statistics_service.get_statistics(documents[document_uuid], documents)
+        try:
+            statistics = statistics_service.get_statistics(documents[document_uuid], documents)
+        except ValueError:
+            raise DocumentIsEmptyException(documents[document_uuid])
         statistics = statistics_service.sort_statistics(statistics)
 
         for word, stat in statistics.items():
@@ -141,4 +149,3 @@ class DocumentService:
 
     def read_document_huffman(self, document_uuid: UUID):
         pass
-

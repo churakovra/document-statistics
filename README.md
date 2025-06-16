@@ -42,35 +42,60 @@ ___
 
 1. Создать папку приложения и перейти в неё
 ```bash
-  mkdir app && cd app
+mkdir app && cd app
 ```
 2. Склонировать репозиторий
 ```bash
-  git clone https://github.com/churakovra/document-statistics.git .
+git clone https://github.com/churakovra/document-statistics.git .
 ```
 3. Открыть и заполнить .env-example файл затем переименовать его в .env
 ```bash
-  mv .env_example .env
+mv .env_example .env
 ```
 4. Создать volume ds-pg
 ```bash
-  docker volume create ds-pg
+docker volume create ds-pg
 ```
 5. Запустить сборку проекта
 ```bash
-  docker-compose up --build
+docker-compose up --build
 ```
   - Сервис доступен по ссылке [http://localhost:8000](http://localhost:8000)
   - Документация Swagger доступна по ссылке [http://localhost:8000/docs](http://localhost:8000/docs)
   - Если запускать на VM, то вместо `localhost` подставлять `ip` VM
 6. Если докер компоуз не хочет заводиться, можно почистить кеш volume
 ```bash
-  docker-compose down -v
-  docker-compose up --build
+docker-compose down -v
+docker-compose up --build
 ```
 ___
+### Фидбек от телеграм юзера `@amal_sultanov`
+#### Что понравилось
+- Структурирование проекта
+- Реализация регистрации/входа в аккаунт
+- Обработка ошибок
+#### Трудности при запуске
+- Отсутствуют 
+#### Предложенные изменения
+- Описать исключение загрузки пустого файла в Swagger
+- Запретить загружать документ не соответствующий .txt формату (получилось загрузить pdf и png, однако при обращении к эндпоинту на получение содержимого документа получил UnicodeDecodeError)
+- Проверить описание POST /collections в swagger
+- Убрать пробелы перед командами для запуска проекта в README (не критично)
+___
 ## Changelog
-
+_Version 1.2.1_
+- Внесены исправления согласно предложенным изменениям
+  - Добавлены HTTPException в места, где может всплыть ошибка с пустым документом; Добавлено описание Swagger
+  - Добавлена проверка на тип загружаемого документа
+  - Исправлено описание в Swagger для endpoint'ов
+    - POST /add_collection_document
+    - GET /collections
+    - POST /collections
+    - DELETE /collections/{collection_id}/{document_id}
+    - GET /collections/{collection_id}/statistics
+    - GET /documents/{document_id}/statistics
+  - Удалены пробелы в командах для запуска проекта
+___
 _Version 1.2.0_
 
 - Полностью переписан сервис в процессе реализации новых требований

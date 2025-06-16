@@ -25,7 +25,11 @@ router = APIRouter()
     description="Документ(один и тот же uuid) может быть добавлен в несколько коллекций, но в одну коллекцию может входить 1 раз",
     responses={
         HTTPStatus.OK: {"description": "Операция успешно выполнена"},
-        HTTPStatus.CONFLICT: {"description": "Документ уже добавлен в коллекцию"}
+        HTTPStatus.CONFLICT: {
+            "description": "Документ уже добавлен в коллекцию / "
+                           "Документ для расчета TF не может быть пустым. Читать в теле ошибки"
+        },
+
     }
 )
 async def add_collection_document(
@@ -41,3 +45,5 @@ async def add_collection_document(
         return {"message": "Операция успешно выполнена"}
     except CollectionAlreadyHasDocumentException as hd:
         raise HTTPException(status_code=hd.status_code, detail=hd.message)
+    except ValueError:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="The collection documents should not be empty")
