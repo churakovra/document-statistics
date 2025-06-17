@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
+from app.config.preferences import AVAILABLE_LETTERS_LOWER
 from app.enums.app_enums import StatisticsTypes
 from app.exceptions.document_exceptions import DocumentNotFoundException, DocumentsNotFoundException, \
     DocumentCollectionsNotFoundException, DocumentIsEmptyException, DocumentWrongTypeException
@@ -14,7 +15,10 @@ from app.repositories.statistics_repository import StatisticsRepository
 from app.schemas.document.document_dto import DocumentDTO
 from app.schemas.document.document_response import DocumentResponse
 from app.schemas.user.user_dto import UserDTO
+from app.services.security_service import SecurityService
 from app.services.statistics_service import StatisticsService
+from app.utils.binary_node import BinaryNode
+from app.utils.priority_heap import PriorityHeap
 
 
 class DocumentService:
@@ -94,6 +98,19 @@ class DocumentService:
             documents[document.uuid] = document_words
         return documents
 
+    def read_document_letters(self, document_uuid) -> tuple[list, dict[str, float | None]]:
+        document_content = []
+        document_letters = dict[str, float | None]()
+
+        for letter in self.read_document(document_uuid):
+            letter_lower = letter.lower()
+            if letter_lower in AVAILABLE_LETTERS_LOWER:
+                document_content.append(letter_lower)
+                if letter_lower not in document_letters.keys():
+                    document_letters[letter_lower] = None
+
+        return document_content, document_letters
+
     def delete_document(self, document_uuid: UUID):
         document = self._get_document(document_uuid)
         try:
@@ -133,7 +150,7 @@ class DocumentService:
         try:
             statistics = statistics_service.get_statistics(documents[document_uuid], documents)
         except ValueError:
-            raise DocumentIsEmptyException(documents[document_uuid])
+            raise DocumentIsEmptyException(document_uuid)
         statistics = statistics_service.sort_statistics(statistics)
 
         for word, stat in statistics.items():
@@ -147,5 +164,33 @@ class DocumentService:
 
         return statistics
 
-    def read_document_huffman(self, document_uuid: UUID):
-        pass
+    def read_document_huffman(self, document_uuid: UUID) -> str:
+
+        document_content, document_letters = self.read_document_letters(document_uuid)
+
+        for search_letter in document_letters:
+            letter_cnt = 0
+            for letter in document_content:
+                if letter == search_letter:
+                    letter_cnt += 1
+            document_letters[search_letter] = letter_cnt / len(document_content)
+
+        priority_heap = PriorityHeap()
+        priority_heap.fill(document_letters)
+
+        while len(priority_heap.data) > 1:
+            left_node, left_priority = priority_heap.pop()
+            right_node, right_priority = priority_heap.pop()
+            node = BinaryNode(value=None, left=left_node, right=right_node)
+            priority_heap.add(item=node, priority=left_priority + right_priority)
+
+        root = priority_heap.pop()[0]
+        codes = SecurityService.generate_code(root)
+
+        response = ""
+
+        for letter in document_content:
+            letter_lower = letter.lower()
+            response += codes[letter_lower]
+
+        return response
