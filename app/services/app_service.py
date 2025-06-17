@@ -14,7 +14,7 @@ from app.schemas.cookie_session import CookieSession
 from app.schemas.user.user_dto import UserDTO
 from app.schemas.user.user_login import UserLogin
 from app.schemas.user.user_session_dto import UserSessionDTO
-from app.services.auth_service import AuthService
+from app.services.security_service import SecurityService
 
 
 class AppService:
@@ -22,7 +22,7 @@ class AppService:
         self.db = db_session
 
     def auth(self, user: UserDTO, user_creds: UserLogin) -> CookieSession:
-        if not AuthService.validate_pass(user_creds.password, user.password_hashed):
+        if not SecurityService.validate_pass(user_creds.password, user.password_hashed):
             raise UserWrongPasswordException()
         user_session = self.create_session(user.uuid)
         return user_session

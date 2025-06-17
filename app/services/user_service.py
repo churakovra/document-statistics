@@ -10,9 +10,10 @@ from app.schemas.user.user_account_response import UserCreds
 from app.schemas.user.user_change_password import UserChangePassword
 from app.schemas.user.user_dto import UserDTO
 from app.services.app_service import AppService
-from app.services.auth_service import AuthService
 from app.services.collection_service import CollectionService
 from app.services.document_service import DocumentService
+from app.services.security_service import SecurityService
+
 
 class UserService:
     def __init__(self, session: Session):
@@ -50,7 +51,7 @@ class UserService:
             self.get_user(username=user_creds.username)
             raise UserAlreadyExistsException(user_creds.username)
         except UserNotFoundException:
-            password_hashed = AuthService.hash_pass(user_creds.password)
+            password_hashed = SecurityService.hash_pass(user_creds.password)
             user_creds.password = password_hashed
             user_repo.add_user(user_creds)
             new_user = self.get_user(username=user_creds.username)
@@ -63,9 +64,9 @@ class UserService:
     def change_password(self, user_uuid: UUID, ucp: UserChangePassword):
         user_repository = UserRepository(self.db)
         user = self.get_user(uuid=user_uuid)
-        if not AuthService.validate_pass(ucp.password_old, user.password_hashed):
+        if not SecurityService.validate_pass(ucp.password_old, user.password_hashed):
             raise UserWrongPasswordException
-        password_hashed_new = AuthService.hash_pass(ucp.password_new)
+        password_hashed_new = SecurityService.hash_pass(ucp.password_new)
         user.password_hashed = password_hashed_new
         user_repository.set_new_pass(user)
 

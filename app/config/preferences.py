@@ -22,3 +22,4 @@ SESSION_ALIVE_HOURS = 8
 # app
 DT_STR_FORMAT = "%d.%m.%Y %H:%M:%S"
 STATISTICS_LENGTH = 50
+AVAILABLE_LETTERS_LOWER = "абвгдеёжзийклмнопрстуфхцчъыьшщэюя".lower()
